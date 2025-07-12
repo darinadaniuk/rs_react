@@ -1,7 +1,4 @@
 import { Component, createRef, type ReactNode } from 'react';
-import TextField from '@mui/material/TextField';
-import SearchIcon from '@mui/icons-material/Search';
-import InputAdornment from '@mui/material/InputAdornment';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -10,6 +7,8 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
+import { FaSearch } from 'react-icons/fa';
+import './Search.css';
 
 interface SearchProps {
   withSearchIcon?: boolean;
@@ -61,22 +60,22 @@ class Search extends Component<SearchProps, SearchState> {
 
   render(): ReactNode {
     return (
-      <TextField
-        inputRef={this.#inputRef}
-        defaultValue={this.state.searchValue}
-        placeholder={this.props.placeholder ?? 'Search'}
-        variant="outlined"
-        slotProps={{
-          input: {
-            startAdornment: this.props.withSearchIcon ? (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ) : undefined,
-          },
-        }}
-        fullWidth
-      />
+      <div className="search">
+        {this.props.withSearchIcon && (
+          <div className="search-icon">
+            <FaSearch className="icon" />
+          </div>
+        )}
+        <input
+          ref={this.#inputRef}
+          defaultValue={this.state.searchValue}
+          type="text"
+          placeholder={this.props.placeholder ?? 'Search'}
+          className={`search-input ${
+            this.props.withSearchIcon ? 'with-icon' : ''
+          }`}
+        />
+      </div>
     );
   }
 }

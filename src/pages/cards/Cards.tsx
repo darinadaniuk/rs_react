@@ -3,12 +3,11 @@ import Search from '../../components/search/Search';
 import './Cards.css';
 import { getCards } from '../../services/CardsService';
 
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
 import type { CardsApiResponse, CardsState } from '../../interfaces/Cards';
 import Card from '../../components/card/Card';
 import EmptyState from '../../components/empty-state/EmptyState';
-import CircularProgress from '@mui/material/CircularProgress';
+import Spinner from '../../components/spinner/Spinner';
+import Pagination from '../../components/pagination/Pagination';
 
 const INITIAL_CARDS_STATE: CardsState = {
   cards: [],
@@ -59,16 +58,13 @@ class Cards extends Component<Record<string, never>, CardsState> {
       .finally(() => this.setState({ loading: false }));
   }
 
-  handlePageChange = (
-    _event: React.ChangeEvent<unknown>,
-    value: number
-  ): void => {
+  handlePageChange = (value: number): void => {
     this.setState({ page: value });
   };
 
   render(): ReactNode {
     const { cards, loading, error, page, totalPages } = this.state;
-    const noData = !cards || cards.length === 0 || error;
+    const noData = !cards || cards.length === 0 || error || loading;
 
     return (
       <div className="cards">
@@ -82,7 +78,7 @@ class Cards extends Component<Record<string, never>, CardsState> {
         <div className={`cards-content ${noData ? 'no-data' : ''}`}>
           {loading ? (
             <div className="cards-loader">
-              <CircularProgress color="primary" />
+              <Spinner />
             </div>
           ) : noData ? (
             <EmptyState />
@@ -92,14 +88,11 @@ class Cards extends Component<Record<string, never>, CardsState> {
         </div>
         {noData ? null : (
           <div className="pagination">
-            <Stack spacing={2} alignItems="center" marginTop={2}>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={this.handlePageChange}
-                color="primary"
-              />
-            </Stack>
+            <Pagination
+              total={totalPages}
+              currentPage={page}
+              onChange={this.handlePageChange}
+            />
           </div>
         )}
       </div>

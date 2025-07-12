@@ -1,5 +1,5 @@
 import reactLogo from '../../assets/react.svg';
-import PersonIcon from '@mui/icons-material/Person';
+import { FaUser } from 'react-icons/fa';
 import './Header.css';
 
 function Header() {
@@ -12,7 +12,7 @@ function Header() {
         <h1>RS React</h1>
       </div>
       <div className="header-block">
-        <PersonIcon />
+        <FaUser />
         <p className="user-name">Darya</p>
       </div>
     </header>
