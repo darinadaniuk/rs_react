@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+
 import './ErrorBoundary.css';
 import noDataIcon from '../../assets/page-not-found.svg';
 

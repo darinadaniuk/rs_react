@@ -1,6 +1,8 @@
-import type { CardItem } from '../../interfaces/Cards';
-import './Card.css';
 import cardLogo from '../../assets/Rick_and_Morty.png';
+
+import type { CardItem } from '../../interfaces/Cards';
+
+import './Card.css';
 
 interface CardProps {
   card: CardItem;

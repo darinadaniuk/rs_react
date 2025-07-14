@@ -1,4 +1,5 @@
 import { Component, createRef, type ReactNode } from 'react';
+import { FaSearch } from 'react-icons/fa';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -7,7 +8,6 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
-import { FaSearch } from 'react-icons/fa';
 import './Search.css';
 
 interface SearchProps {

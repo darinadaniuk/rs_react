@@ -1,5 +1,6 @@
-import reactLogo from '../../assets/react.svg';
 import { FaUser } from 'react-icons/fa';
+
+import reactLogo from '../../assets/react.svg';
 import './Header.css';
 
 function Header() {

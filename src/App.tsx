@@ -1,8 +1,8 @@
 import './App.css';
-import Header from './components/header/Header';
-import Footer from './components/footer/Footer';
-import Cards from './pages/cards/Cards';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
+import Footer from './components/footer/Footer';
+import Header from './components/header/Header';
+import Cards from './pages/cards/Cards';
 
 function App() {
   return (

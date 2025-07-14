@@ -1,13 +1,14 @@
 import { Component, type ReactNode } from 'react';
-import Search from '../../components/search/Search';
+
 import './Cards.css';
+import Card from '../../components/card/Card';
+import EmptyState from '../../components/empty-state/EmptyState';
+import Pagination from '../../components/pagination/Pagination';
+import Search from '../../components/search/Search';
+import Spinner from '../../components/spinner/Spinner';
 import { getCards } from '../../services/CardsService';
 
 import type { CardsApiResponse, CardsState } from '../../interfaces/Cards';
-import Card from '../../components/card/Card';
-import EmptyState from '../../components/empty-state/EmptyState';
-import Spinner from '../../components/spinner/Spinner';
-import Pagination from '../../components/pagination/Pagination';
 
 const INITIAL_CARDS_STATE: CardsState = {
   cards: [],
