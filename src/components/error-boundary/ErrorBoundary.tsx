@@ -2,6 +2,7 @@ import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 import './ErrorBoundary.css';
 import noDataIcon from '../../assets/page-not-found.svg';
+import Button from '../ui/Button';
 
 interface Props {
   children: ReactNode;
@@ -22,13 +23,19 @@ class ErrorBoundary extends Component<Props, State> {
     console.error('ErrorBoundary error:', error, info);
   }
 
+  refreshPage(): void {
+    window.location.reload();
+  }
+
   render(): ReactNode {
     if (this.state.hasError) {
       return (
         <div className="error">
           <img className="error-icon" src={noDataIcon} alt="No data" />
           <h3 className="error-title">Something went wrong</h3>
+          <p>Error Boundary happened</p>
           <p>Please try refreshing the page</p>
+          <Button onClick={this.refreshPage} text="Refresh page" />
         </div>
       );
     }

@@ -7,13 +7,13 @@ import Cards from './pages/cards/Cards';
 function App() {
   return (
     <div className="app-page">
-      <Header />
-      <main className="content">
-        <ErrorBoundary>
+      <ErrorBoundary>
+        <Header />
+        <main className="content">
           <Cards />
-        </ErrorBoundary>
-      </main>
-      <Footer />
+        </main>
+        <Footer />
+      </ErrorBoundary>
     </div>
   );
 }
