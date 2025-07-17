@@ -59,6 +59,11 @@ export default tseslint.config(
       react: {
         version: 'detect',
       },
+      "import/resolver": {
+        "typescript": {
+          "project": "./tsconfig.eslint.json"
+        }
+      }
     },
   }
 );

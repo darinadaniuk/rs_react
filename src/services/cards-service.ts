@@ -1,4 +1,4 @@
-import type { CardsApiResponse } from '../interfaces/Cards';
+import type { CardsApiResponse } from '../interfaces/cards';
 
 const URL = 'https://rickandmortyapi.com/api/character';
 

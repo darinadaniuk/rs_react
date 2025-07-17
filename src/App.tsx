@@ -1,10 +1,8 @@
-import './App.css';
-import ErrorBoundary from './components/error-boundary/ErrorBoundary';
-import Footer from './components/footer/Footer';
-import Header from './components/header/Header';
-import Cards from './pages/cards/Cards';
+import './app.css';
+import { ErrorBoundary, Footer, Header } from '@rs-react/components';
+import { Cards } from '@rs-react/pages';
 
-function App() {
+export default function App() {
   return (
     <div className="app-page">
       <ErrorBoundary>
@@ -17,5 +15,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

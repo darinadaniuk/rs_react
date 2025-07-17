@@ -1,4 +1,4 @@
-import './Pagination.css';
+import './pagination.css';
 
 interface PaginationProps {
   total: number;
@@ -12,7 +12,7 @@ interface PaginationProps {
   - A more advanced logic with configurable amount of pages will be provided later
 */
 
-function Pagination({ total, currentPage, onChange }: PaginationProps) {
+export function Pagination({ total, currentPage, onChange }: PaginationProps) {
   const pages = Array.from({ length: total }, (_, i) => i + 1);
 
   const prev = () => {
@@ -53,5 +53,3 @@ function Pagination({ total, currentPage, onChange }: PaginationProps) {
     </div>
   );
 }
-
-export default Pagination;

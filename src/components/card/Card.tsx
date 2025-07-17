@@ -1,14 +1,14 @@
-import cardLogo from '../../assets/Rick_and_Morty.png';
+import cardLogo from '../../assets/rick-and-morty.png';
 
-import type { CardItem } from '../../interfaces/Cards';
+import type { CardItem } from '../../interfaces/cards';
 
-import './Card.css';
+import './card.css';
 
 interface CardProps {
   card: CardItem;
 }
 
-function Card({ card }: CardProps) {
+export function Card({ card }: CardProps) {
   return (
     <div className="card">
       <img className="card-logo" src={cardLogo} alt="logo" />
@@ -18,5 +18,3 @@ function Card({ card }: CardProps) {
     </div>
   );
 }
-
-export default Card;

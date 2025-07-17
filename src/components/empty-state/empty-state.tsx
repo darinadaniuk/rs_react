@@ -1,11 +1,11 @@
-import './EmptyState.css';
+import './empty-state.css';
 import noDataIcon from '../../assets/page-not-found.svg';
 
 interface EmptyStateProps {
   message?: string;
 }
 
-function EmptyState({ message = 'No data found' }: EmptyStateProps) {
+export function EmptyState({ message = 'No data found' }: EmptyStateProps) {
   return (
     <div className="empty-state">
       <img className="empty-icon" src={noDataIcon} alt="No data" />
@@ -13,5 +13,3 @@ function EmptyState({ message = 'No data found' }: EmptyStateProps) {
     </div>
   );
 }
-
-export default EmptyState;

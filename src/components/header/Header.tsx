@@ -2,10 +2,10 @@ import { Component } from 'react';
 import { FaUser } from 'react-icons/fa';
 
 import reactLogo from '../../assets/react.svg';
-import './Header.css';
-import Button from '../ui/Button';
+import './header.css';
+import Button from '../ui/button/button';
 
-class Header extends Component {
+export class Header extends Component {
   state = { throwError: false };
 
   setError = (): void => {
@@ -34,5 +34,3 @@ class Header extends Component {
     );
   }
 }
-
-export default Header;

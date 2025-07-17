@@ -1,14 +1,17 @@
 import { Component, type ReactNode } from 'react';
 
-import './Cards.css';
-import Card from '../../components/card/Card';
-import EmptyState from '../../components/empty-state/EmptyState';
-import Pagination from '../../components/pagination/Pagination';
-import Search from '../../components/search/Search';
-import Spinner from '../../components/spinner/Spinner';
-import { getCards } from '../../services/CardsService';
+import {
+  EmptyState,
+  Pagination,
+  Search,
+  Spinner,
+  Card,
+} from '@rs-react/components';
+import { getCards } from '@rs-react/services';
 
-import type { CardsApiResponse, CardsState } from '../../interfaces/Cards';
+import type { CardsApiResponse, CardsState } from '@rs-react/interfaces';
+
+import './cards.css';
 
 const INITIAL_CARDS_STATE: CardsState = {
   cards: [],
@@ -19,7 +22,7 @@ const INITIAL_CARDS_STATE: CardsState = {
   error: null,
 };
 
-class Cards extends Component<Record<string, never>, CardsState> {
+export class Cards extends Component<Record<string, never>, CardsState> {
   state = { ...INITIAL_CARDS_STATE };
 
   searchCard = (searchTerm: string): void => {
@@ -100,5 +103,3 @@ class Cards extends Component<Record<string, never>, CardsState> {
     );
   }
 }
-
-export default Cards;

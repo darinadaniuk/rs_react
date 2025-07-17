@@ -8,7 +8,7 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
-import './Search.css';
+import './search.css';
 
 interface SearchProps {
   withSearchIcon?: boolean;
@@ -24,7 +24,7 @@ interface SearchState {
 
 const SEARCH_DEBOUNCE_DEFAULT = 500;
 
-class Search extends Component<SearchProps, SearchState> {
+export class Search extends Component<SearchProps, SearchState> {
   state: SearchState = {
     searchValue: localStorage.getItem('cardsSearchTerm') ?? '',
   };
@@ -79,5 +79,3 @@ class Search extends Component<SearchProps, SearchState> {
     );
   }
 }
-
-export default Search;

@@ -1,8 +1,8 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 
-import './ErrorBoundary.css';
+import './error-boundary.css';
 import noDataIcon from '../../assets/page-not-found.svg';
-import Button from '../ui/Button';
+import Button from '../ui/button/button';
 
 interface Props {
   children: ReactNode;
@@ -12,7 +12,7 @@ interface State {
   hasError: boolean;
 }
 
-class ErrorBoundary extends Component<Props, State> {
+export class ErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false };
 
   static getDerivedStateFromError(): State {
@@ -43,5 +43,3 @@ class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-
-export default ErrorBoundary;
