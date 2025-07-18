@@ -1,0 +1,22 @@
+.button {
+  background-color: #03d8ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #03adcc;
+}
+
+.button.danger {
+  background-color: #b80c0c;
+}
+
+.button.danger:hover {
+  background-color: #770606;
+}
