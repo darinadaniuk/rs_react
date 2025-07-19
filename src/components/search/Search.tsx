@@ -1,6 +1,5 @@
 import { Component, createRef, type ReactNode } from 'react';
 import { FaSearch } from 'react-icons/fa';
-
 import {
   debounceTime,
   distinctUntilChanged,
@@ -64,7 +63,7 @@ export class Search extends Component<SearchProps, SearchState> {
     return (
       <div className="search">
         {this.props.withSearchIcon && (
-          <div className="search-icon">
+          <div data-testid="search-icon" className="search-icon">
             <FaSearch className="icon" />
           </div>
         )}
@@ -73,6 +72,7 @@ export class Search extends Component<SearchProps, SearchState> {
           defaultValue={this.state.searchValue}
           type="text"
           placeholder={this.props.placeholder ?? 'Search'}
+          data-testid="search-input"
           className={`search-input ${
             this.props.withSearchIcon ? 'with-icon' : ''
           }`}
