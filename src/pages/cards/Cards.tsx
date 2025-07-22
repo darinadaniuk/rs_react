@@ -81,11 +81,13 @@ export class Cards extends Component<Record<string, never>, CardsState> {
         </div>
         <div className={`cards-content ${noData ? 'no-data' : ''}`}>
           {loading ? (
-            <div className="cards-loader">
+            <div className="cards-loader" data-testid="loader">
               <Spinner />
             </div>
           ) : noData ? (
-            <EmptyState />
+            <div data-testid="empty-state">
+              <EmptyState />
+            </div>
           ) : (
             cards.map((_card) => <Card key={_card.id} card={_card} />)
           )}

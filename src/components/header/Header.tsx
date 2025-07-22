@@ -24,12 +24,14 @@ export class Header extends Component {
           <a href="https://react.dev" target="_blank" rel="noreferrer">
             <img src={reactLogo} className="logo react" alt="React logo" />
           </a>
-          <h1>RS React</h1>
+          <h1 data-testid="header-title">RS React</h1>
         </div>
         <Button onClick={this.setError} text="Error Boundary" type="danger" />
         <div className="header-block">
           <FaUser />
-          <p className="user-name">Darya</p>
+          <p data-testid="header-user" className="user-name">
+            Darya
+          </p>
         </div>
       </header>
     );
