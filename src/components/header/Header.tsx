@@ -2,22 +2,11 @@ import { Component } from 'react';
 import { FaUser } from 'react-icons/fa';
 
 import reactLogo from '@rs-react/assets/react.svg';
-import { Button } from '@rs-react/components/shared';
 
 import './header.css';
 
 export class Header extends Component {
-  state = { throwError: false };
-
-  setError = (): void => {
-    this.setState({ throwError: true });
-  };
-
   render() {
-    if (this.state.throwError) {
-      throw new Error('Error triggered in class component render');
-    }
-
     return (
       <header className="header">
         <div className="header-block">
@@ -26,7 +15,6 @@ export class Header extends Component {
           </a>
           <h1 data-testid="header-title">RS React</h1>
         </div>
-        <Button onClick={this.setError} text="Error Boundary" type="danger" />
         <div className="header-block">
           <FaUser />
           <p data-testid="header-user" className="user-name">
