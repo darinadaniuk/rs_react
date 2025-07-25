@@ -1,0 +1,53 @@
+.about {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+
+.about > section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.about-photo {
+  height: 800px;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-name {
+  text-transform: uppercase;
+  font-size: 36px;
+  font-weight: 600;
+}
+
+.about-title {
+  font-size: 24px;
+}
+
+.about-introduction {
+  font-size: 16px;
+  line-height: 22px;
+  text-align: justify;
+}
+.about-introduction > p:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+.about-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.about-links a {
+  width: 32px;
+  height: 32px;
+}
