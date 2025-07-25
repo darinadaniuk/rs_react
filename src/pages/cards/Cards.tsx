@@ -1,5 +1,6 @@
 import { Component, type ReactNode } from 'react';
 
+import { getCards } from '@rs-react/api';
 import {
   EmptyState,
   Pagination,
@@ -7,7 +8,6 @@ import {
   Spinner,
   Card,
 } from '@rs-react/components';
-import { getCards } from '@rs-react/services';
 
 import type { CardsApiResponse, CardsState } from '@rs-react/interfaces';
 

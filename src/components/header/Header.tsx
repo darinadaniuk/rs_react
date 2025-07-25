@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { FaUser } from 'react-icons/fa';
 
 import reactLogo from '@rs-react/assets/react.svg';
-import { Button } from '@rs-react/components/ui';
+import { Button } from '@rs-react/components/shared';
 
 import './header.css';
 

@@ -2,11 +2,11 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
-import { getCards } from '@rs-react/services';
+import { getCards } from '@rs-react/api';
 
 import { Cards } from './cards';
 
-vi.mock('@rs-react/services', () => ({
+vi.mock('@rs-react/api', () => ({
   getCards: vi.fn(),
 }));
 
