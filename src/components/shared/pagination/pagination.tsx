@@ -1,26 +1,34 @@
+import { useMemo } from 'react';
+
 import './pagination.css';
+import { getVisiblePages, SEPARATOR_KEY } from './pagination.utils';
 
 interface PaginationProps {
   total: number;
   currentPage: number;
-  onChange: (page: number) => void;
+  onPageChange: (page: number) => void;
 }
 
-/*
-  Limitation:
-  - Pagination shows all the pages
-  - A more advanced logic with configurable amount of pages will be provided later
-*/
-
-export function Pagination({ total, currentPage, onChange }: PaginationProps) {
-  const pages = Array.from({ length: total }, (_, i) => i + 1);
+export function Pagination({
+  total,
+  currentPage,
+  onPageChange,
+}: PaginationProps) {
+  const pages = useMemo(
+    () => getVisiblePages(total, currentPage),
+    [total, currentPage]
+  );
 
   const prev = () => {
-    if (currentPage > 1) onChange(currentPage - 1);
+    if (currentPage > 1) {
+      onPageChange(currentPage - 1);
+    }
   };
 
   const next = () => {
-    if (currentPage < total) onChange(currentPage + 1);
+    if (currentPage < total) {
+      onPageChange(currentPage + 1);
+    }
   };
 
   return (
@@ -33,15 +41,21 @@ export function Pagination({ total, currentPage, onChange }: PaginationProps) {
         Prev
       </button>
 
-      {pages.map((page) => (
-        <button
-          key={page}
-          className={`pagination-button ${page === currentPage ? 'active' : ''}`}
-          onClick={() => onChange(page)}
-        >
-          {page}
-        </button>
-      ))}
+      {pages.map((page, index) =>
+        page === SEPARATOR_KEY ? (
+          <span key={`dots-${index}`} className="pagination-dots">
+            ...
+          </span>
+        ) : (
+          <button
+            key={page}
+            className={`pagination-button ${page === currentPage ? 'active' : ''}`}
+            onClick={() => onPageChange(page)}
+          >
+            {page}
+          </button>
+        )
+      )}
 
       <button
         className="pagination-button nav-button"

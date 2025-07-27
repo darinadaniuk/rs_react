@@ -3,7 +3,11 @@
   justify-content: space-between;
   align-items: center;
   background-color: #f5f5f5;
-  padding: 6px 18px;
+  padding: 12px 18px;
+}
+
+.header-title {
+  font-size: 22px;
 }
 
 .header-block {

@@ -19,13 +19,12 @@
 }
 
 .pagination-button:hover:not(:disabled) {
-  background-color: #f0f0f0;
+  border-color: #00ffcc;
 }
 
 .pagination-button.active {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
+  background-color: #00ffcc;
+  border-color: #00ffcc;
 }
 
 .pagination-button:disabled {
@@ -35,4 +34,10 @@
 
 .nav-button {
   font-weight: 500;
+}
+
+.pagination-dots {
+  padding: 0 8px;
+  color: #999;
+  pointer-events: none;
 }

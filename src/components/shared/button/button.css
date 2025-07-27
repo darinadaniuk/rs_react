@@ -1,5 +1,5 @@
 .button {
-  background-color: #03d8ff;
+  background-color: #03dfb3;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -10,7 +10,7 @@
 }
 
 .button:hover {
-  background-color: #03adcc;
+  background-color: #03bf9a;
 }
 
 .button.danger {

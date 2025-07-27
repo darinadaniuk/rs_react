@@ -32,6 +32,7 @@ img {
 }
 
 .about-introduction {
+  margin-right: 18px;
   font-size: 16px;
   line-height: 22px;
   text-align: justify;

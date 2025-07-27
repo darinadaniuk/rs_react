@@ -11,6 +11,14 @@
   color: #00ffcc;
 }
 
+.card.active {
+  box-shadow:
+    0 0 10px 3px #c1e040,
+    0 0 20px 6px #d7f15f,
+    0 0 30px 10px #b7d900cc;
+  border: 2px solid #c1e040;
+}
+
 .card:hover {
   border-color: #00ffcc;
   cursor: pointer;

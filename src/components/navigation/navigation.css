@@ -1,0 +1,34 @@
+.navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  padding: 12px 12px;
+}
+
+.navigation-link {
+  position: relative;
+  display: block;
+  color: #43424c;
+  text-decoration: none;
+  transition: 0.5s;
+}
+
+.navigation-link::after {
+  position: absolute;
+  content: "";
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #00ffcc;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s;
+}
+
+.navigation-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}

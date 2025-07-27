@@ -13,11 +13,11 @@ export function About() {
       </section>
       <section>
         <h3 className="about-name">Darya Daniuk</h3>
-        <p className="about-title">RS React course student</p>
+        <p className="about-title">RSS React course student</p>
         <div className="about-introduction">
           <p>
             {
-              "Hi! My name is Darya. Thanks for taking the time to read my intro. I'd love to share a little bit about myself."
+              'Hi! My name is Darya. Thanks for taking the time to read my intro.'
             }
           </p>
           <p>

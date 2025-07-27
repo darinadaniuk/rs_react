@@ -1,4 +1,4 @@
-import { Component, createRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import {
   debounceTime,
@@ -15,69 +15,60 @@ interface SearchProps {
   withSearchIcon?: boolean;
   placeholder?: string;
   searchDebounce?: number;
-
   search: (value: string) => void;
-}
-
-interface SearchState {
-  searchValue: string;
 }
 
 const SEARCH_DEBOUNCE_DEFAULT = 500;
 
-export class Search extends Component<SearchProps, SearchState> {
-  state: SearchState = {
-    searchValue: localStorage.getItem('cardsSearchTerm') ?? '',
-  };
+export function Search({
+  withSearchIcon,
+  placeholder = 'Search',
+  searchDebounce = SEARCH_DEBOUNCE_DEFAULT,
+  search,
+}: SearchProps) {
+  const [searchValue] = useState(
+    () => localStorage.getItem('cardsSearchTerm') ?? ''
+  );
+  const inputRef = useRef<HTMLInputElement>(null);
+  const destroy$ = useRef(new Subject<void>()).current;
 
-  #inputRef = createRef<HTMLInputElement>();
-  #destroy$ = new Subject<void>();
-
-  componentDidMount(): void {
-    this.#listenSearch();
-  }
-
-  componentWillUnmount(): void {
-    this.#destroy$.next();
-    this.#destroy$.complete();
-  }
-
-  #listenSearch(): void {
-    const inputEl = this.#inputRef.current;
+  useEffect(() => {
+    const inputEl = inputRef.current;
     if (!inputEl) return;
 
     fromEvent<InputEvent>(inputEl, 'input')
       .pipe(
         map((event) => (event.target as HTMLInputElement).value),
-        debounceTime(this.props.searchDebounce ?? SEARCH_DEBOUNCE_DEFAULT),
+        debounceTime(searchDebounce),
         distinctUntilChanged(),
-        takeUntil(this.#destroy$)
+        takeUntil(destroy$)
       )
       .subscribe((value: string) => {
         localStorage.setItem('cardsSearchTerm', value.trim());
-        this.props.search(value.trim());
+        search(value.trim());
       });
-  }
 
-  render(): ReactNode {
-    return (
-      <div className="search">
-        {this.props.withSearchIcon && (
-          <div data-testid="search-icon" className="search-icon">
-            <FaSearch className="icon" />
-          </div>
-        )}
-        <input
-          ref={this.#inputRef}
-          defaultValue={this.state.searchValue}
-          type="text"
-          placeholder={this.props.placeholder ?? 'Search'}
-          data-testid="search-input"
-          className={`search-input ${
-            this.props.withSearchIcon ? 'with-icon' : ''
-          }`}
-        />
-      </div>
-    );
-  }
+    return () => {
+      destroy$.next();
+      destroy$.complete();
+    };
+  }, [search, searchDebounce, destroy$]);
+
+  return (
+    <div className="search">
+      {withSearchIcon && (
+        <div data-testid="search-icon" className="search-icon">
+          <FaSearch className="icon" />
+        </div>
+      )}
+      <input
+        ref={inputRef}
+        defaultValue={searchValue}
+        type="text"
+        placeholder={placeholder}
+        data-testid="search-input"
+        className={`search-input ${withSearchIcon ? 'with-icon' : ''}`}
+      />
+    </div>
+  );
 }
