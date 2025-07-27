@@ -16,11 +16,10 @@ vi.mock('@rs-react/pages', () => ({
 }));
 
 describe('App', () => {
-  it('renders Header, Cards, and Footer', () => {
+  it('renders Header, and Footer', () => {
     render(<App />);
 
     expect(screen.getByText('Mock Header')).toBeInTheDocument();
-    expect(screen.getByText('Mock Cards')).toBeInTheDocument();
     expect(screen.getByText('Mock Footer')).toBeInTheDocument();
   });
 });

@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import App from '@rs-react/app.tsx';
+import App from '@rs-react/app';
 import { CardDetails } from '@rs-react/components';
 import { About, Cards } from '@rs-react/pages/index.ts';
 

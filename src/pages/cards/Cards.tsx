@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from 'react';
 import { useSearchParams, Outlet, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
-import { getCards } from '@rs-react/api';
+import { getCardById, getCards } from '@rs-react/api';
 import {
   EmptyState,
   Pagination,
@@ -18,6 +18,7 @@ import type {
 } from '@rs-react/interfaces';
 
 import './cards.css';
+import { useStorage } from '@rs-react/hooks/local-storage.hook';
 
 export const CardDetailContext = createContext<CardItem | undefined>(undefined);
 
@@ -28,12 +29,15 @@ export function Cards() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = Number(searchParams.get('page') ?? '1');
-  const initialSearchTerm =
-    searchParams.get('search') ?? localStorage.getItem('cardsSearchTerm') ?? '';
-
+  const [storedSearchTerm, setStoredSearchTerm] = useStorage<string>(
+    'cardsSearchTerm',
+    { failoverValue: '' }
+  );
+  const initialSearchTerm = searchParams.get('search') ?? storedSearchTerm;
   const [cards, setCards] = useState<CardsState['cards']>([]);
   const [activeCardId, setActiveCardId] = useState<number | null>(null);
   const [cardDetail, setCardDetail] = useState<CardItem | undefined>(undefined);
+  const [cardDetailLoading, setCardDetailLoading] = useState(false);
 
   const [page, setPage] = useState<number>(initialPage);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -59,8 +63,8 @@ export function Cards() {
   }, [searchTerm, page]);
 
   useEffect(() => {
-    localStorage.setItem('cardsSearchTerm', searchTerm);
-  }, [searchTerm]);
+    setStoredSearchTerm(searchTerm);
+  }, [searchTerm, setStoredSearchTerm]);
 
   useEffect(() => {
     setLoading(true);
@@ -111,13 +115,21 @@ export function Cards() {
     setPage(value);
   };
 
-  const onCardClick = (cardId: number): void => {
-    setCardDetail(cards.find((c) => c.id === cardId));
-    setActiveCardId(cardId);
-    navigate({
-      pathname: `details/${cardId}`,
-      search: `?${searchParams.toString()}`,
-    });
+  const onCardClick = async (cardId: number): Promise<void> => {
+    setCardDetailLoading(true);
+    try {
+      const detail = await getCardById(cardId);
+      setCardDetail(detail);
+      setActiveCardId(cardId);
+      navigate({
+        pathname: `details/${cardId}`,
+        search: `?${searchParams.toString()}`,
+      });
+    } catch {
+      setError('Failed to load card details');
+    } finally {
+      setCardDetailLoading(false);
+    }
   };
 
   return (
@@ -165,7 +177,13 @@ export function Cards() {
       {/* ToDo investigate styles incapsulation */}
       <div className="card-details-wrapper">
         <CardDetailContext.Provider value={cardDetail}>
-          <Outlet />
+          {cardDetailLoading ? (
+            <div className="cards-loader" data-testid="card-detail-loader">
+              <Spinner />
+            </div>
+          ) : (
+            <Outlet />
+          )}
         </CardDetailContext.Provider>
       </div>
     </div>

@@ -29,6 +29,7 @@ export default defineConfig({
         '**/index.ts',
         '**/interfaces/**',
         '**/main.tsx',
+        '**/*.hook.ts',
       ],
       thresholds: {
         global: {

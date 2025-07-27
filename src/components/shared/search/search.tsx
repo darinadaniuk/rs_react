@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import {
   debounceTime,
@@ -8,6 +8,8 @@ import {
   Subject,
   takeUntil,
 } from 'rxjs';
+
+import { useStorage } from '@rs-react/hooks/local-storage.hook';
 
 import './search.css';
 
@@ -26,11 +28,12 @@ export function Search({
   searchDebounce = SEARCH_DEBOUNCE_DEFAULT,
   search,
 }: SearchProps) {
-  const [searchValue] = useState(
-    () => localStorage.getItem('cardsSearchTerm') ?? ''
-  );
   const inputRef = useRef<HTMLInputElement>(null);
   const destroy$ = useRef(new Subject<void>()).current;
+
+  const [searchValue, setSearchValue] = useStorage<string>('cardsSearchTerm', {
+    failoverValue: '',
+  });
 
   useEffect(() => {
     const inputEl = inputRef.current;
@@ -44,15 +47,16 @@ export function Search({
         takeUntil(destroy$)
       )
       .subscribe((value: string) => {
-        localStorage.setItem('cardsSearchTerm', value.trim());
-        search(value.trim());
+        const trimmed = value.trim();
+        setSearchValue(trimmed);
+        search(trimmed);
       });
 
     return () => {
       destroy$.next();
       destroy$.complete();
     };
-  }, [search, searchDebounce, destroy$]);
+  }, [search, searchDebounce, setSearchValue, destroy$]);
 
   return (
     <div className="search">
@@ -63,7 +67,8 @@ export function Search({
       )}
       <input
         ref={inputRef}
-        defaultValue={searchValue}
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
         type="text"
         placeholder={placeholder}
         data-testid="search-input"

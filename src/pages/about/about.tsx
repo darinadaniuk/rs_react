@@ -41,6 +41,7 @@ export function About() {
             href="https://github.com/darinadaniuk"
             target="_blank"
             rel="noopener noreferrer"
+            data-testid="github-link"
           >
             <FaGithub size={32} color="#64656a" />
           </a>

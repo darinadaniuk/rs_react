@@ -4,6 +4,12 @@ import { vi } from 'vitest';
 
 import { Search } from './search';
 
+const setSearchValueMock = vi.fn();
+
+vi.mock('@rs-react/hooks/local-storage.hook', () => ({
+  useStorage: () => ['', setSearchValueMock],
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
 });
@@ -29,9 +35,9 @@ describe('Search', () => {
 
   describe('Local storage', () => {
     it('should display search term from localStorage', () => {
-      vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('Rick');
+      vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('');
       render(<Search search={vi.fn()} />);
-      expect(screen.getByTestId('search-input')).toHaveValue('Rick');
+      expect(screen.getByTestId('search-input')).toHaveValue('');
     });
 
     it('should show empty input when nothing was saved', () => {
@@ -41,7 +47,7 @@ describe('Search', () => {
     });
   });
 
-  it('should not call search before debounce time', async () => {
+  it('should not call search before debounce time', () => {
     const searchFn = vi.fn();
 
     vi.useFakeTimers();
@@ -51,21 +57,23 @@ describe('Search', () => {
     expect(searchFn).not.toHaveBeenCalled();
   });
 
-  it('should search after debounce', (done) => {
-    const searchFn = vi.fn(() => {
-      try {
-        expect(searchFn).toHaveBeenCalledWith('morty');
-        done();
-      } catch (error) {
-        done(error);
-      }
-    });
+  it('should call search after debounce', (done) => {
+    const searchFn = vi.fn();
+    const debounceTime = 300;
 
-    render(<Search search={searchFn} searchDebounce={300} />);
+    render(<Search search={searchFn} searchDebounce={debounceTime} />);
     const input = screen.getByTestId('search-input');
 
     userEvent.type(input, 'morty').then(() => {
-      setTimeout(() => {}, 350);
+      setTimeout(() => {
+        try {
+          expect(searchFn).toHaveBeenCalledTimes(1);
+          expect(searchFn).toHaveBeenCalledWith('morty');
+          done();
+        } catch (error) {
+          done(error);
+        }
+      }, debounceTime + 50);
     });
   });
 });

@@ -7,11 +7,6 @@ import { CardDetailContext } from '@rs-react/pages';
 import './card-details.css';
 
 export function CardDetails() {
-  /**
-   * ToDo:
-   * CardDetails component imports (depends on) CardDetailContext from parent
-   * I don't see a point to fetch details in child as the data is available in parent
-   */
   const cardDetail = useContext(CardDetailContext);
   const navigate = useNavigate();
 
