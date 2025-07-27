@@ -6,11 +6,17 @@ import './card.css';
 
 interface CardProps {
   card: CardItem;
+  isActive?: boolean;
+  onCardClick?: (cardId: number) => void;
 }
 
-export function Card({ card }: CardProps) {
+export function Card({ card, isActive, onCardClick }: CardProps) {
   return (
-    <div className="card">
+    <div
+      role="button"
+      className={`card ${isActive ? 'active' : ''}`}
+      onClick={() => onCardClick?.(card.id)}
+    >
       <img className="card-logo" src={cardLogo} alt="logo" />
       <img
         data-testid="character-img"

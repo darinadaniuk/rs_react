@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 import { Card } from './card';
 
@@ -39,7 +39,7 @@ describe('Card', () => {
     expect(species).toBeInTheDocument();
   });
 
-  it('shoul render the card image', () => {
+  it('should render the card image', () => {
     render(<Card card={mockCard} />);
     const logo = screen.getByAltText('logo');
     expect(logo).toBeInTheDocument();
@@ -69,5 +69,29 @@ describe('Card', () => {
     const img = screen.getByTestId('character-img');
     expect(img).not.toHaveAttribute('src');
     expect(img).not.toHaveAttribute('alt');
+  });
+
+  it('should call onCardClick with card id when clicked', () => {
+    const onCardClick = vi.fn();
+    const { container } = render(
+      <Card card={mockCard} onCardClick={onCardClick} />
+    );
+    const cardDiv = container.firstChild as HTMLElement;
+
+    cardDiv.click();
+    expect(onCardClick).toHaveBeenCalledTimes(1);
+    expect(onCardClick).toHaveBeenCalledWith(mockCard.id);
+  });
+
+  it('should add active class when isActive is true', () => {
+    const { container } = render(<Card card={mockCard} isActive />);
+    const cardDiv = container.firstChild;
+    expect(cardDiv).toHaveClass('active');
+  });
+
+  it('should not add active class when isActive is false', () => {
+    const { container } = render(<Card card={mockCard} isActive={false} />);
+    const cardDiv = container.firstChild;
+    expect(cardDiv).not.toHaveClass('active');
   });
 });

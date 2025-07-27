@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-import { getCards } from './cards-service';
+import { getCardById, getCards } from './cards-service';
 
 const mockSuccessResponse = {
   info: { pages: 3 },
@@ -50,5 +50,34 @@ describe('Cards service', () => {
 
     global.fetch = mockFetch as unknown as typeof fetch;
     await expect(getCards('rick', 1)).rejects.toThrow('Network error');
+  });
+
+  it('should fetch card by id', async () => {
+    const mockCard = { id: 1, name: 'Rick Sanchez' };
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue(mockCard),
+    });
+
+    global.fetch = mockFetch as unknown as typeof fetch;
+
+    const data = await getCardById(1);
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://rickandmortyapi.com/api/character/1'
+    );
+    expect(data).toEqual(mockCard);
+  });
+
+  it('should throw error if response is not ok', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: false,
+    });
+
+    global.fetch = mockFetch as unknown as typeof fetch;
+
+    await expect(getCardById(9999)).rejects.toThrow(
+      'Card with id 9999 not found'
+    );
   });
 });

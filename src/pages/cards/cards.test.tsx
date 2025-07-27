@@ -1,75 +1,157 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { vi, type Mock } from 'vitest';
 
-import { getCards } from '@rs-react/services';
+import * as api from '@rs-react/api';
+import * as storageHook from '@rs-react/hooks/local-storage.hook';
 
 import { Cards } from './cards';
 
-vi.mock('@rs-react/services', () => ({
-  getCards: vi.fn(),
-}));
+import type { CardItem, CardsApiResponse } from '@rs-react/interfaces';
+
+interface PaginationProps {
+  total: number;
+  currentPage: number;
+  onPageChange: (page: number) => void;
+}
+
+interface SearchProps {
+  search: (value: string) => void;
+}
+
+interface CardType {
+  id: string | number;
+  name: string;
+}
+
+interface CardProps {
+  card: CardType;
+  isActive: boolean;
+  onCardClick: (id: string | number) => void;
+}
+
+const mockCard = {
+  id: 1,
+  name: 'Rick Sanchez',
+  image: 'image-url',
+  status: 'Alive',
+};
+
+const mockResponse = {
+  results: [mockCard],
+  info: { pages: 1 },
+};
+
+vi.mock('@rs-react/components', async () => {
+  const actual = await vi.importActual('@rs-react/components');
+  return {
+    ...actual,
+    Card: ({ card, isActive, onCardClick }: CardProps) => (
+      <div data-testid="card" onClick={() => onCardClick(card.id)}>
+        {card.name} {isActive ? '(active)' : ''}
+      </div>
+    ),
+    Search: ({ search }: SearchProps) => (
+      <input
+        placeholder="Search by name"
+        data-testid="search-input"
+        onChange={(e) => search(e.target.value)}
+      />
+    ),
+    Spinner: () => <div data-testid="spinner">Loading...</div>,
+    EmptyState: () => <div data-testid="empty">No data</div>,
+    Pagination: ({ total, currentPage, onPageChange }: PaginationProps) => (
+      <button onClick={() => onPageChange(currentPage + 1)}>
+        Next Page ({currentPage}/{total})
+      </button>
+    ),
+  };
+});
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useParams: () => ({}),
+    useSearchParams: () => {
+      const params = new URLSearchParams();
+      return [params, vi.fn()];
+    },
+  };
+});
 
 describe('Cards', () => {
-  const mockCards = {
-    info: { pages: 3 },
-    results: [
-      { id: 1, name: 'Card One' },
-      { id: 2, name: 'Card Two' },
-    ],
-  };
-
   beforeEach(() => {
+    vi.spyOn(api, 'getCards').mockResolvedValue(
+      mockResponse as CardsApiResponse
+    );
+    vi.spyOn(api, 'getCardById').mockResolvedValue(mockCard as CardItem);
+    vi.spyOn(storageHook, 'useStorage').mockReturnValue(['', vi.fn()]);
+  });
+
+  afterEach(() => {
     vi.clearAllMocks();
-    localStorage.setItem('cardsSearchTerm', 'test');
   });
 
-  it('should make initial API call', async () => {
-    (getCards as ReturnType<typeof vi.fn>).mockResolvedValue(mockCards);
-    render(<Cards />);
-    expect(getCards).toHaveBeenCalledWith('', 1);
-    await waitFor(() =>
-      expect(screen.getByText('Card One')).toBeInTheDocument()
+  const renderComponent = () =>
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Routes>
+          <Route path="/" element={<Cards />}>
+            <Route
+              path="details/:id"
+              element={<div data-testid="detail-outlet" />}
+            />
+          </Route>
+        </Routes>
+      </MemoryRouter>
     );
-  });
 
-  it('should display loader while loading', async () => {
-    (getCards as ReturnType<typeof vi.fn>).mockResolvedValueOnce(mockCards);
-    render(<Cards />);
+  it('renders loading state then cards', async () => {
+    renderComponent();
+
     expect(screen.getByTestId('loader')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('card')).toBeInTheDocument());
+  });
+
+  it('renders empty state if no cards returned', async () => {
+    (api.getCards as Mock).mockResolvedValueOnce({
+      results: [],
+      info: { pages: 1 },
+    });
+
+    renderComponent();
     await waitFor(() =>
-      expect(screen.getByText('Card One')).toBeInTheDocument()
+      expect(screen.getByTestId('empty')).toBeInTheDocument()
     );
   });
 
-  it('should render EmptyState on API error', async () => {
-    (getCards as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-      new Error('Something went wrong')
-    );
-    render(<Cards />);
+  it('handles API error', async () => {
+    (api.getCards as Mock).mockRejectedValueOnce(new Error('API failed'));
+
+    renderComponent();
     await waitFor(() =>
-      expect(screen.getByTestId('empty-state')).toBeInTheDocument()
+      expect(screen.getByTestId('empty')).toBeInTheDocument()
     );
   });
 
-  it('should update state on search', async () => {
-    (getCards as ReturnType<typeof vi.fn>).mockResolvedValue(mockCards);
-    render(<Cards />);
-    await waitFor(() => screen.getByText('Card One'));
+  it('updates card detail on card click', async () => {
+    renderComponent();
 
-    const input = screen.getByPlaceholderText('Search by name');
-    await userEvent.clear(input);
-    await userEvent.type(input, 'morty');
-    await waitFor(() => expect(getCards).toHaveBeenLastCalledWith('morty', 1));
+    await waitFor(() => expect(screen.getByTestId('card')).toBeInTheDocument());
+    fireEvent.click(screen.getByTestId('card'));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('detail-outlet')).toBeInTheDocument()
+    );
   });
 
-  it('should update page on pagination', async () => {
-    (getCards as ReturnType<typeof vi.fn>).mockResolvedValue(mockCards);
-    render(<Cards />);
-    await waitFor(() => screen.getByText('Card One'));
+  it('calls search and resets page', async () => {
+    renderComponent();
 
-    const pageButton = screen.getByRole('button', { name: '2' });
-    await userEvent.click(pageButton);
-    await waitFor(() => expect(getCards).toHaveBeenLastCalledWith('', 2));
+    const input = screen.getByTestId('search-input');
+    fireEvent.change(input, { target: { value: 'Morty' } });
+
+    await waitFor(() => expect(api.getCards).toHaveBeenCalledWith('Morty', 1));
   });
 });

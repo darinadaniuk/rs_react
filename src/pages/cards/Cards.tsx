@@ -1,5 +1,8 @@
-import { Component, type ReactNode } from 'react';
+import { createContext, useEffect, useState } from 'react';
+import { useSearchParams, Outlet, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
+import { getCardById, getCards } from '@rs-react/api';
 import {
   EmptyState,
   Pagination,
@@ -7,78 +10,139 @@ import {
   Spinner,
   Card,
 } from '@rs-react/components';
-import { getCards } from '@rs-react/services';
 
-import type { CardsApiResponse, CardsState } from '@rs-react/interfaces';
+import type {
+  CardItem,
+  CardsApiResponse,
+  CardsState,
+} from '@rs-react/interfaces';
 
 import './cards.css';
+import { useStorage } from '@rs-react/hooks/local-storage.hook';
 
-const INITIAL_CARDS_STATE: CardsState = {
-  cards: [],
-  page: 1,
-  searchTerm: localStorage.getItem('cardsSearchTerm') ?? '',
-  totalPages: 1,
-  loading: false,
-  error: null,
-};
+export const CardDetailContext = createContext<CardItem | undefined>(undefined);
 
-export class Cards extends Component<Record<string, never>, CardsState> {
-  state = { ...INITIAL_CARDS_STATE };
+export function Cards() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const activeIdFromUrl = id ? Number(id) : null;
 
-  searchCard = (searchTerm: string): void => {
-    this.setState({ searchTerm: searchTerm });
-  };
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialPage = Number(searchParams.get('page') ?? '1');
+  const [storedSearchTerm, setStoredSearchTerm] = useStorage<string>(
+    'cardsSearchTerm',
+    { failoverValue: '' }
+  );
+  const initialSearchTerm = searchParams.get('search') ?? storedSearchTerm;
+  const [cards, setCards] = useState<CardsState['cards']>([]);
+  const [activeCardId, setActiveCardId] = useState<number | null>(null);
+  const [cardDetail, setCardDetail] = useState<CardItem | undefined>(undefined);
+  const [cardDetailLoading, setCardDetailLoading] = useState(false);
 
-  componentDidMount(): void {
-    this.#getCards();
-  }
+  const [page, setPage] = useState<number>(initialPage);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  componentDidUpdate(
-    _prevProps: Record<string, never>,
-    prevState: CardsState
-  ): void {
-    const pageChanged = prevState.page !== this.state.page;
-    const searchTermChanged = prevState.searchTerm !== this.state.searchTerm;
+  const noData = !cards.length || error || loading;
 
-    if (pageChanged || searchTermChanged) {
-      this.#getCards();
+  useEffect(() => {
+    const newParams = new URLSearchParams();
+
+    if (searchTerm.trim()) {
+      newParams.set('search', searchTerm.trim());
     }
-  }
+    if (page) {
+      newParams.set('page', page.toString());
+    }
 
-  #getCards(): void {
-    const { searchTerm, page } = this.state;
+    if (newParams.toString() !== searchParams.toString()) {
+      setSearchParams(newParams);
+    }
+  }, [searchTerm, page]);
 
-    this.setState({ loading: true, error: null });
+  useEffect(() => {
+    setStoredSearchTerm(searchTerm);
+  }, [searchTerm, setStoredSearchTerm]);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
     getCards(searchTerm, page)
       .then((data: CardsApiResponse) => {
-        this.setState({
-          cards: data.results,
-          totalPages: data.info.pages,
-        });
+        setCards(data.results);
+        setTotalPages(data.info.pages);
+        syncActiveCardWithUrl(data.results, activeIdFromUrl);
       })
       .catch((err) => {
-        this.setState({ error: err.message, cards: [] });
+        setError(err.message);
+        setCards([]);
+        setCardDetail(undefined);
       })
-      .finally(() => this.setState({ loading: false }));
-  }
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [page, searchTerm]);
 
-  handlePageChange = (value: number): void => {
-    this.setState({ page: value });
+  const syncActiveCardWithUrl = (
+    cards: CardItem[],
+    activeIdFromUrl: number | null
+  ) => {
+    if (activeIdFromUrl && cards.length) {
+      const found = cards.find((c) => c.id === activeIdFromUrl);
+      if (found) {
+        setActiveCardId(found.id);
+        setCardDetail(found);
+      } else {
+        setActiveCardId(null);
+        setCardDetail(undefined);
+        navigate({
+          pathname: '',
+          search: searchParams.toString(),
+        });
+      }
+    }
   };
 
-  render(): ReactNode {
-    const { cards, loading, error, page, totalPages } = this.state;
-    const noData = !cards || cards.length === 0 || error || loading;
+  const search = (value: string): void => {
+    setSearchTerm(value);
+    setPage(1);
+  };
 
-    return (
+  const changePage = (value: number): void => {
+    setPage(value);
+  };
+
+  const onCardClick = async (cardId: number): Promise<void> => {
+    setCardDetailLoading(true);
+    try {
+      const detail = await getCardById(cardId);
+      setCardDetail(detail);
+      setActiveCardId(cardId);
+      navigate({
+        pathname: `details/${cardId}`,
+        search: `?${searchParams.toString()}`,
+      });
+    } catch {
+      setError('Failed to load card details');
+    } finally {
+      setCardDetailLoading(false);
+    }
+  };
+
+  return (
+    <div className="cards-page">
       <div className="cards">
         <div className="cards-search">
           <Search
             placeholder="Search by name"
             withSearchIcon={true}
-            search={this.searchCard}
+            search={search}
           />
         </div>
+
         <div className={`cards-content ${noData ? 'no-data' : ''}`}>
           {loading ? (
             <div className="cards-loader" data-testid="loader">
@@ -89,19 +153,39 @@ export class Cards extends Component<Record<string, never>, CardsState> {
               <EmptyState />
             </div>
           ) : (
-            cards.map((_card) => <Card key={_card.id} card={_card} />)
+            cards.map((_card) => (
+              <Card
+                key={_card.id}
+                card={_card}
+                isActive={activeCardId === _card.id}
+                onCardClick={onCardClick}
+              />
+            ))
           )}
         </div>
-        {noData ? null : (
+
+        {!noData && (
           <div className="pagination">
             <Pagination
               total={totalPages}
               currentPage={page}
-              onChange={this.handlePageChange}
+              onPageChange={changePage}
             />
           </div>
         )}
       </div>
-    );
-  }
+      {/* ToDo investigate styles incapsulation */}
+      <div className="card-details-wrapper">
+        <CardDetailContext.Provider value={cardDetail}>
+          {cardDetailLoading ? (
+            <div className="cards-loader" data-testid="card-detail-loader">
+              <Spinner />
+            </div>
+          ) : (
+            <Outlet />
+          )}
+        </CardDetailContext.Provider>
+      </div>
+    </div>
+  );
 }

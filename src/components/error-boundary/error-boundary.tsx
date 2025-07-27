@@ -1,7 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 import noDataIcon from '@rs-react/assets/page-not-found.svg';
-import { Button } from '@rs-react/components/ui/button/button';
+import { Button } from '@rs-react/components/shared/button/button';
 
 import './error-boundary.css';
 

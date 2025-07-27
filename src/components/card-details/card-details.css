@@ -1,0 +1,19 @@
+.card-details {
+  margin-left: 18px;
+  padding: 12px 24px;
+  width: 400px;
+  height: 100%;
+  border: 1px solid #00ffcc;
+  border-radius: 8px;
+}
+
+.card-details > .button {
+  display: block;
+  margin-left: auto;
+}
+
+.details-data {
+  margin-top: 24px;
+  font-size: 18px;
+  line-height: 24px;
+}

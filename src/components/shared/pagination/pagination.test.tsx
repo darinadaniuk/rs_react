@@ -12,7 +12,7 @@ describe('Pagination', () => {
   });
 
   it('should render all page buttons', () => {
-    render(<Pagination total={3} currentPage={1} onChange={onChange} />);
+    render(<Pagination total={3} currentPage={1} onPageChange={onChange} />);
 
     expect(screen.getByRole('button', { name: '1' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '2' })).toBeInTheDocument();
@@ -20,36 +20,36 @@ describe('Pagination', () => {
   });
 
   it('should highlight the current page', () => {
-    render(<Pagination total={3} currentPage={2} onChange={onChange} />);
+    render(<Pagination total={3} currentPage={2} onPageChange={onChange} />);
 
     const activeButton = screen.getByRole('button', { name: '2' });
     expect(activeButton).toHaveClass('active');
   });
 
   it('should disable Prev for the first page', () => {
-    render(<Pagination total={3} currentPage={1} onChange={onChange} />);
+    render(<Pagination total={3} currentPage={1} onPageChange={onChange} />);
     expect(screen.getByRole('button', { name: 'Prev' })).toBeDisabled();
   });
 
   it('should disable Next for the last page', () => {
-    render(<Pagination total={3} currentPage={3} onChange={onChange} />);
+    render(<Pagination total={3} currentPage={3} onPageChange={onChange} />);
     expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
   });
 
   it('should call onChange when page number is clicked', async () => {
-    render(<Pagination total={3} currentPage={1} onChange={onChange} />);
+    render(<Pagination total={3} currentPage={1} onPageChange={onChange} />);
     await userEvent.click(screen.getByRole('button', { name: '2' }));
     expect(onChange).toHaveBeenCalledWith(2);
   });
 
   it('should call onChange when Next is clicked', async () => {
-    render(<Pagination total={3} currentPage={1} onChange={onChange} />);
+    render(<Pagination total={3} currentPage={1} onPageChange={onChange} />);
     await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(onChange).toHaveBeenCalledWith(2);
   });
 
   it('should call onChange when Prev is clicked', async () => {
-    render(<Pagination total={3} currentPage={2} onChange={onChange} />);
+    render(<Pagination total={3} currentPage={2} onPageChange={onChange} />);
     await userEvent.click(screen.getByRole('button', { name: 'Prev' }));
     expect(onChange).toHaveBeenCalledWith(1);
   });
