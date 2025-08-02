@@ -12,8 +12,15 @@
   overflow-y: auto;
 }
 
-.cards-search {
+.cards-top-section {
+  display: flex;
+  align-items: center;
+  gap: 24px;
   margin-bottom: 16px;
+}
+
+.cards-search {
+  flex: 1;
 }
 
 .cards-content.no-data {

@@ -9,6 +9,7 @@ import {
   Search,
   Spinner,
   Card,
+  CardSelectionFlyout,
 } from '@rs-react/components';
 
 import type {
@@ -19,6 +20,7 @@ import type {
 
 import './cards.css';
 import { useStorage } from '@rs-react/hooks/local-storage.hook';
+import { useSelectedItemsStore } from '@rs-react/store';
 
 export const CardDetailContext = createContext<CardItem | undefined>(undefined);
 
@@ -26,6 +28,12 @@ export function Cards() {
   const navigate = useNavigate();
   const { id } = useParams();
   const activeIdFromUrl = id ? Number(id) : null;
+
+  const selectedCards = useSelectedItemsStore((state) => state.selectedCards);
+  const selectionData = selectedCards.map((card) => ({ ...card })) as Record<
+    string,
+    unknown
+  >[];
 
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = Number(searchParams.get('page') ?? '1');
@@ -135,12 +143,23 @@ export function Cards() {
   return (
     <div className="cards-page">
       <div className="cards">
-        <div className="cards-search">
-          <Search
-            placeholder="Search by name"
-            withSearchIcon={true}
-            search={search}
-          />
+        <div className="cards-top-section">
+          <div className="cards-search">
+            <Search
+              placeholder="Search by name"
+              withSearchIcon={true}
+              search={search}
+            />
+          </div>
+          {!noData && (
+            <div className="pagination">
+              <Pagination
+                total={totalPages}
+                currentPage={page}
+                onPageChange={changePage}
+              />
+            </div>
+          )}
         </div>
 
         <div className={`cards-content ${noData ? 'no-data' : ''}`}>
@@ -162,17 +181,12 @@ export function Cards() {
               />
             ))
           )}
+          {selectedCards?.length && (
+            <div className="cards-flyout">
+              <CardSelectionFlyout cards={selectionData} />
+            </div>
+          )}
         </div>
-
-        {!noData && (
-          <div className="pagination">
-            <Pagination
-              total={totalPages}
-              currentPage={page}
-              onPageChange={changePage}
-            />
-          </div>
-        )}
       </div>
       {/* ToDo investigate styles incapsulation */}
       <div className="card-details-wrapper">
