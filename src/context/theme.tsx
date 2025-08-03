@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 
 import { useStorage } from '@rs-react/hooks/local-storage.hook';
 
@@ -9,21 +9,29 @@ interface ThemeContext {
   setTheme: (theme: Theme) => void;
 }
 
-const DEFAULT_CONTEXT: ThemeContext = {
+const DefaultContext: ThemeContext = {
   theme: 'dark',
   setTheme: () => {},
 };
 
-const ThemeContext = createContext<ThemeContext>(DEFAULT_CONTEXT);
+const ThemeContext = createContext<ThemeContext>(DefaultContext);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useStorage<Theme>('theme', {
-    failoverValue: DEFAULT_CONTEXT.theme,
+    failoverValue: DefaultContext.theme,
   });
+
+  useEffect(() => {
+    document.body.setAttribute('data-theme', theme);
+
+    return () => {
+      document.body.removeAttribute('data-theme');
+    };
+  }, [theme]);
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
-      <div data-theme={theme}>{children}</div>
+      {children}
     </ThemeContext.Provider>
   );
 };

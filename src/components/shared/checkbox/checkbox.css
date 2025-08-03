@@ -10,9 +10,9 @@
 .custom-checkbox .custom-checkbox-box {
   width: 22px;
   height: 22px;
-  border: 2px solid #333;
+  border: 2px solid #03dfb3;
   border-radius: 4px;
-  background-color: #fff;
+  background-color: transparent;
   position: relative;
   transition: background-color 0.2s;
 }

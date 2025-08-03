@@ -1,5 +1,4 @@
-const PAGES_TO_SHOW = 5;
-export const SEPARATOR_KEY = 'separator';
+import { PAGES_TO_SHOW, SEPARATOR_KEY } from '@rs-react/constants';
 
 export function getVisiblePages(
   total: number,

@@ -1,5 +1,7 @@
+import { SEPARATOR_KEY } from '@rs-react/constants';
+
 import './pagination.css';
-import { getVisiblePages, SEPARATOR_KEY } from './pagination.utils';
+import { getVisiblePages } from './pagination.utils';
 
 interface PaginationProps {
   total: number;

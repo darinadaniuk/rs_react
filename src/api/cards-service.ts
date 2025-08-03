@@ -1,6 +1,6 @@
-import type { CardItem, CardsApiResponse } from '@rs-react/interfaces';
+import { CHARACTER_URL } from '@rs-react/constants';
 
-const URL = 'https://rickandmortyapi.com/api/character';
+import type { CardItem, CardsApiResponse } from '@rs-react/interfaces';
 
 export const getCards = async (
   searchTerm: string = '',
@@ -13,7 +13,7 @@ export const getCards = async (
   }
   params.append('page', String(page));
 
-  const url = `${URL}?${params.toString()}`;
+  const url = `${CHARACTER_URL}?${params.toString()}`;
   const response = await fetch(url);
   const data: CardsApiResponse = await response.json();
 
@@ -21,7 +21,7 @@ export const getCards = async (
 };
 
 export const getCardById = async (id: number): Promise<CardItem> => {
-  const response = await fetch(`${URL}/${id}`);
+  const response = await fetch(`${CHARACTER_URL}/${id}`);
   if (!response.ok) {
     throw new Error(`Card with id ${id} not found`);
   }

@@ -12,6 +12,7 @@ import {
 import { useStorage } from '@rs-react/hooks/local-storage.hook';
 
 import './search.css';
+import { SEARCH_DEBOUNCE_DEFAULT } from '@rs-react/constants';
 
 interface SearchProps {
   withSearchIcon?: boolean;
@@ -19,8 +20,6 @@ interface SearchProps {
   searchDebounce?: number;
   search: (value: string) => void;
 }
-
-const SEARCH_DEBOUNCE_DEFAULT = 500;
 
 export function Search({
   withSearchIcon,

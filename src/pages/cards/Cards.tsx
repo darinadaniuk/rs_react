@@ -1,6 +1,11 @@
+import classNames from 'classnames';
 import { createContext, useEffect, useState } from 'react';
-import { useSearchParams, Outlet, useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import {
+  useSearchParams,
+  Outlet,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 
 import { getCardById, getCards } from '@rs-react/api';
 import {
@@ -53,7 +58,11 @@ export function Cards() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const noData = !cards.length || error || loading;
+  const noData = !cards.length || error;
+  const cardsContentClass = classNames('cards-content', {
+    'no-data': noData,
+    loading,
+  });
 
   useEffect(() => {
     const newParams = new URLSearchParams();
@@ -162,13 +171,13 @@ export function Cards() {
           )}
         </div>
 
-        <div className={`cards-content ${noData ? 'no-data' : ''}`}>
+        <div className={cardsContentClass}>
           {loading ? (
             <div className="cards-loader" data-testid="loader">
               <Spinner />
             </div>
           ) : noData ? (
-            <div data-testid="empty-state">
+            <div className="cards-empty-state" data-testid="empty-state">
               <EmptyState />
             </div>
           ) : (
@@ -181,11 +190,11 @@ export function Cards() {
               />
             ))
           )}
-          {selectedCards?.length && (
+          {selectedCards?.length ? (
             <div className="cards-flyout">
               <CardSelectionFlyout cards={selectionData} />
             </div>
-          )}
+          ) : null}
         </div>
       </div>
       {/* ToDo investigate styles incapsulation */}
