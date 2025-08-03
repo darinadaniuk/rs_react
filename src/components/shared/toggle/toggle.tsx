@@ -21,9 +21,9 @@ export function Toggle({ checked, label, onChange }: ToggleProps) {
       <span className="toggle-slider">
         <span className="toggle-thumb">
           {checked ? (
-            <FaMoon className="toggle-icon" />
+            <FaMoon className="toggle-icon" data-testid="moon-icon" />
           ) : (
-            <FaSun className="toggle-icon" />
+            <FaSun className="toggle-icon" data-testid="sun-icon" />
           )}
         </span>
       </span>

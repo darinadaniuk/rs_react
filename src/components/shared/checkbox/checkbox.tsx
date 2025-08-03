@@ -28,7 +28,7 @@ export const Checkbox: React.FC<CustomCheckboxProps> = ({
       role="checkbox"
       aria-checked={checked}
       tabIndex={0}
-      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggle()}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggle(e)}
     >
       <span className="custom-checkbox-box" />
       {label && <span className="custom-checkbox-label">{label}</span>}

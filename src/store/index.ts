@@ -1,1 +1,1 @@
-export * from './useSelectedCardsStore';
+export * from './use-selected-cards-store';
