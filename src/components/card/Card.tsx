@@ -30,7 +30,6 @@ export function Card({ card, isActive, onCardClick }: CardProps) {
       className={`card ${isActive ? 'active' : ''}`}
       onClick={() => onCardClick?.(card.id)}
     >
-      <Checkbox checked={isChecked} onChange={setCheckboxState} />
       <img className="card-logo" src={cardLogo} alt="logo" />
       <img
         data-testid="character-img"
@@ -38,8 +37,13 @@ export function Card({ card, isActive, onCardClick }: CardProps) {
         src={card.image}
         alt={card.name}
       />
-      <h3 className="card-name">{card.name}</h3>
-      <p className="card-description">{card.species}</p>
+      <div className="card-footer">
+        <div>
+          <h3 className="card-name">{card.name}</h3>
+          <p className="card-description">{card.species}</p>
+        </div>
+        <Checkbox checked={isChecked} onChange={setCheckboxState} />
+      </div>
     </div>
   );
 }

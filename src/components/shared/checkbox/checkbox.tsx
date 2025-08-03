@@ -14,8 +14,11 @@ export const Checkbox: React.FC<CustomCheckboxProps> = ({
   label,
   disabled = false,
 }) => {
-  const toggle = () => {
-    if (!disabled) onChange(!checked);
+  const toggle = (e: React.MouseEvent | React.KeyboardEvent) => {
+    if (!disabled) {
+      e.stopPropagation();
+      onChange(!checked);
+    }
   };
 
   return (
