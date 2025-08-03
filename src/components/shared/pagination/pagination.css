@@ -3,7 +3,6 @@
   gap: 8px;
   justify-content: center;
   align-items: center;
-  margin-top: 16px;
   flex-wrap: wrap;
 }
 
@@ -19,12 +18,12 @@
 }
 
 .pagination-button:hover:not(:disabled) {
-  border-color: #00ffcc;
+  border-color: #03dfb3;
 }
 
 .pagination-button.active {
-  background-color: #00ffcc;
-  border-color: #00ffcc;
+  background-color: #03dfb3;
+  border-color: #03dfb3;
 }
 
 .pagination-button:disabled {

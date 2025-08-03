@@ -1,6 +1,11 @@
+import classNames from 'classnames';
 import { createContext, useEffect, useState } from 'react';
-import { useSearchParams, Outlet, useNavigate } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import {
+  useSearchParams,
+  Outlet,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 
 import { getCardById, getCards } from '@rs-react/api';
 import {
@@ -9,6 +14,7 @@ import {
   Search,
   Spinner,
   Card,
+  CardSelectionFlyout,
 } from '@rs-react/components';
 
 import type {
@@ -19,6 +25,7 @@ import type {
 
 import './cards.css';
 import { useStorage } from '@rs-react/hooks/local-storage.hook';
+import { useSelectedItemsStore } from '@rs-react/store';
 
 export const CardDetailContext = createContext<CardItem | undefined>(undefined);
 
@@ -26,6 +33,12 @@ export function Cards() {
   const navigate = useNavigate();
   const { id } = useParams();
   const activeIdFromUrl = id ? Number(id) : null;
+
+  const selectedCards = useSelectedItemsStore((state) => state.selectedCards);
+  const selectionData = selectedCards.map((card) => ({ ...card })) as Record<
+    string,
+    unknown
+  >[];
 
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = Number(searchParams.get('page') ?? '1');
@@ -45,7 +58,11 @@ export function Cards() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const noData = !cards.length || error || loading;
+  const noData = !cards.length || error;
+  const cardsContentClass = classNames('cards-content', {
+    'no-data': noData,
+    loading,
+  });
 
   useEffect(() => {
     const newParams = new URLSearchParams();
@@ -135,21 +152,32 @@ export function Cards() {
   return (
     <div className="cards-page">
       <div className="cards">
-        <div className="cards-search">
-          <Search
-            placeholder="Search by name"
-            withSearchIcon={true}
-            search={search}
-          />
+        <div className="cards-top-section">
+          <div className="cards-search">
+            <Search
+              placeholder="Search by name"
+              withSearchIcon={true}
+              search={search}
+            />
+          </div>
+          {!noData && (
+            <div className="pagination">
+              <Pagination
+                total={totalPages}
+                currentPage={page}
+                onPageChange={changePage}
+              />
+            </div>
+          )}
         </div>
 
-        <div className={`cards-content ${noData ? 'no-data' : ''}`}>
+        <div className={cardsContentClass}>
           {loading ? (
             <div className="cards-loader" data-testid="loader">
               <Spinner />
             </div>
           ) : noData ? (
-            <div data-testid="empty-state">
+            <div className="cards-empty-state" data-testid="empty-state">
               <EmptyState />
             </div>
           ) : (
@@ -162,17 +190,12 @@ export function Cards() {
               />
             ))
           )}
+          {selectedCards?.length ? (
+            <div className="cards-flyout">
+              <CardSelectionFlyout cards={selectionData} />
+            </div>
+          ) : null}
         </div>
-
-        {!noData && (
-          <div className="pagination">
-            <Pagination
-              total={totalPages}
-              currentPage={page}
-              onPageChange={changePage}
-            />
-          </div>
-        )}
       </div>
       {/* ToDo investigate styles incapsulation */}
       <div className="card-details-wrapper">

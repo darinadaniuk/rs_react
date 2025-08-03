@@ -75,7 +75,7 @@ describe('CardDetails', () => {
     );
 
     fireEvent.click(screen.getByText('Close'));
-    expect(mockNavigate).toHaveBeenCalledWith({ pathname: '/' });
+    expect(mockNavigate).toHaveBeenCalledWith({ pathname: '/', search: '' });
   });
 
   it('should render "Unknown" for location name if location is missing or empty', () => {

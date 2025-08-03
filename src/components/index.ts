@@ -5,3 +5,4 @@ export * from './header/header';
 export * from './shared';
 export * from './navigation/navigation';
 export * from './card-details/card-details';
+export * from './card-selection-flyout/card-selection-flyout';

@@ -24,3 +24,23 @@ p {
   margin: 0;
   font-weight: normal;
 }
+
+:root {
+  --bg-color: #fff;
+  --text-color: #000;
+}
+
+[data-theme='dark'] {
+  --bg-color: #1e1e1e;
+  --text-color: #fff;
+}
+
+.app-page, .header, .footer, .flyout  {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background 0.3s, color 0.3s;
+}
+
+[data-theme='dark'] a {
+  color: #fff;
+}

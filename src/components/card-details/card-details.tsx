@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Button } from '@rs-react/components/shared';
 import { CardDetailContext } from '@rs-react/pages';
@@ -9,9 +9,10 @@ import './card-details.css';
 export function CardDetails() {
   const cardDetail = useContext(CardDetailContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const close = () => {
-    navigate({ pathname: `/` });
+    navigate({ pathname: `/`, search: location.search });
   };
 
   return (

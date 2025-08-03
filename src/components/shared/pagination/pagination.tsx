@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
+import { SEPARATOR_KEY } from '@rs-react/constants';
 
 import './pagination.css';
-import { getVisiblePages, SEPARATOR_KEY } from './pagination.utils';
+import { getVisiblePages } from './pagination.utils';
 
 interface PaginationProps {
   total: number;
@@ -14,10 +14,7 @@ export function Pagination({
   currentPage,
   onPageChange,
 }: PaginationProps) {
-  const pages = useMemo(
-    () => getVisiblePages(total, currentPage),
-    [total, currentPage]
-  );
+  const pages = getVisiblePages(total, currentPage);
 
   const prev = () => {
     if (currentPage > 1) {
