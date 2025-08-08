@@ -9,10 +9,10 @@ import {
   takeUntil,
 } from 'rxjs';
 
+import { SEARCH_DEBOUNCE_DEFAULT } from '@rs-react/constants';
 import { useStorage } from '@rs-react/hooks/local-storage.hook';
 
 import './search.css';
-import { SEARCH_DEBOUNCE_DEFAULT } from '@rs-react/constants';
 
 interface SearchProps {
   withSearchIcon?: boolean;

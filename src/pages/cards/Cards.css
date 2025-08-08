@@ -46,3 +46,9 @@
   justify-content: center;
   height: 100%;
 }
+
+.demo-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

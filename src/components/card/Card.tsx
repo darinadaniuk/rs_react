@@ -13,11 +13,6 @@ interface CardProps {
 }
 
 export function Card({ card, isActive, onCardClick }: CardProps) {
-  /**
-   * Question to a mentor / reviewer:
-   * is it ok to use a store in a dumb component?
-   * in my case, should I emit data to the Cards (container) component?
-   */
   const selectCard = useSelectedItemsStore((state) => state.selectItem);
   const unSelectCard = useSelectedItemsStore((state) => state.unselectItem);
   const isChecked = useSelectedItemsStore((state) => state.isSelected(card.id));
