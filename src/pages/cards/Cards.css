@@ -52,3 +52,11 @@
   align-items: center;
   gap: 12px;
 }
+
+.cards-error, .cards-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+}

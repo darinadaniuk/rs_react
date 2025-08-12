@@ -1,12 +1,12 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet } from 'react-router-dom';
 
 import { ErrorBoundary, Footer, Header } from '@rs-react/components';
 import { ThemeProvider } from '@rs-react/context';
+import { queryClient } from '@rs-react/query-client.config';
 
 import './app.css';
-
-const queryClient = new QueryClient();
 
 export default function App() {
   return (
@@ -22,6 +22,7 @@ export default function App() {
           </ErrorBoundary>
         </div>
       </ThemeProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
