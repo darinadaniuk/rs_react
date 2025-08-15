@@ -1,18 +1,22 @@
-import { useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+'use client';
+
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@rs-react/components/shared';
-import { CardDetailContext } from '@rs-react/pages';
+import { CardDetailContext } from '@rs-react/context';
 
 import './card-details.css';
+import { useContext } from 'react';
 
 export function CardDetails() {
   const cardDetail = useContext(CardDetailContext);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const close = () => {
-    navigate({ pathname: `/`, search: location.search });
+    const search = searchParams.toString();
+    router.push(`/${search ? `?${search}` : ''}`);
   };
 
   return (
@@ -20,7 +24,12 @@ export function CardDetails() {
       <Button text="Close" onClick={close} />
       {cardDetail && (
         <div className="details-data">
-          <img src={cardDetail.image} alt={cardDetail.name} />
+          <Image
+            src={cardDetail.image}
+            alt={cardDetail.name}
+            fill
+            style={{ objectFit: 'contain' }}
+          />
           <p>Id: {cardDetail.id}</p>
           <p>Name: {cardDetail.name}</p>
           <p>Species: {cardDetail.species}</p>

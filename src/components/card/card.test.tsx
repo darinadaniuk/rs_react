@@ -48,7 +48,7 @@ describe('Card', () => {
   it('should render the character image', () => {
     render(<Card card={mockCard} />);
     const image = screen.getByTestId('character-img');
-    expect(image).toHaveAttribute('src', mockCard.image);
+    expect(image.getAttribute('src')).toContain('rickandmortyapi.com');
   });
 
   it('should handle missing props gracefully', () => {

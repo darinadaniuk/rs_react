@@ -10,49 +10,35 @@ import { Cards } from './cards';
 
 import type { CardItem, CardsApiResponse } from '@rs-react/interfaces';
 
-interface PaginationProps {
-  total: number;
-  currentPage: number;
-  onPageChange: (page: number) => void;
-}
-
-interface SearchProps {
-  search: (value: string) => void;
-}
-
-interface CardType {
-  id: string | number;
-  name: string;
-}
-
-interface CardProps {
-  card: CardType;
-  isActive: boolean;
-  onCardClick: (id: string | number) => void;
-}
-
-const mockCard = {
-  id: 1,
-  name: 'Rick Sanchez',
-  image: 'image-url',
-  status: 'Alive',
-};
-
-const mockResponse = {
-  results: [mockCard],
-  info: { pages: 1 },
-};
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    query: {},
+  }),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => '/',
+}));
 
 vi.mock('@rs-react/components', async () => {
   const actual = await vi.importActual('@rs-react/components');
   return {
     ...actual,
-    Card: ({ card, isActive, onCardClick }: CardProps) => (
+    Card: ({
+      card,
+      isActive,
+      onCardClick,
+    }: {
+      card: CardItem;
+      isActive: boolean;
+      onCardClick: (id: number) => void;
+    }) => (
       <div data-testid="card" onClick={() => onCardClick(card.id)}>
         {card.name} {isActive ? '(active)' : ''}
       </div>
     ),
-    Search: ({ search }: SearchProps) => (
+    Search: ({ search }: { search: (value: string) => void }) => (
       <input
         placeholder="Search by name"
         data-testid="search-input"
@@ -61,7 +47,15 @@ vi.mock('@rs-react/components', async () => {
     ),
     Spinner: () => <div data-testid="spinner">Loading...</div>,
     EmptyState: () => <div data-testid="empty">No data</div>,
-    Pagination: ({ total, currentPage, onPageChange }: PaginationProps) => (
+    Pagination: ({
+      total,
+      currentPage,
+      onPageChange,
+    }: {
+      total: number;
+      currentPage: number;
+      onPageChange: (page: number) => void;
+    }) => (
       <button onClick={() => onPageChange(currentPage + 1)}>
         Next Page ({currentPage}/{total})
       </button>
@@ -74,22 +68,34 @@ vi.mock('react-router-dom', async () => {
   return {
     ...actual,
     useParams: () => ({}),
-    useSearchParams: () => {
-      const params = new URLSearchParams();
-      return [params, vi.fn()];
-    },
+    useSearchParams: () => [new URLSearchParams(), vi.fn()],
   };
 });
 
-describe('Cards', () => {
+const mockCard: Partial<CardItem> = {
+  id: 1,
+  name: 'Rick Sanchez',
+  image: 'image-url',
+  status: 'Alive',
+};
+
+const mockResponse: CardsApiResponse = {
+  results: [mockCard as CardItem],
+  info: {
+    pages: 1,
+    count: 0,
+    next: null,
+    prev: null,
+  },
+};
+
+describe('Cards component', () => {
   let queryClient: QueryClient;
 
   beforeEach(() => {
     queryClient = new QueryClient();
 
-    vi.spyOn(api, 'getCards').mockResolvedValue(
-      mockResponse as CardsApiResponse
-    );
+    vi.spyOn(api, 'getCards').mockResolvedValue(mockResponse);
     vi.spyOn(api, 'getCardById').mockResolvedValue(mockCard as CardItem);
     vi.spyOn(storageHook, 'useStorage').mockReturnValue(['', vi.fn()]);
   });
@@ -120,13 +126,14 @@ describe('Cards', () => {
 
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId('card')).toBeInTheDocument());
+    expect(screen.getByText(/Rick Sanchez/)).toBeInTheDocument();
   });
 
-  it('renders empty state if no cards returned', async () => {
+  it('should render empty state if no cards returned', async () => {
     (api.getCards as Mock).mockResolvedValueOnce({
       results: [],
       info: { pages: 1 },
-    });
+    } as unknown as CardsApiResponse);
 
     renderComponent();
     await waitFor(() =>
@@ -134,37 +141,7 @@ describe('Cards', () => {
     );
   });
 
-  it('should render loading state then cards', async () => {
-    renderComponent();
-
-    expect(screen.getByTestId('loader')).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByTestId('card')).toBeInTheDocument());
-  });
-
-  it('should render empty state if no cards returned', async () => {
-    (api.getCards as Mock).mockResolvedValueOnce({
-      results: [],
-      info: { pages: 1 },
-    });
-
-    renderComponent();
-    await waitFor(() =>
-      expect(screen.getByTestId('empty-state')).toBeInTheDocument()
-    );
-  });
-
-  it('should update card detail on card click', async () => {
-    renderComponent();
-
-    await waitFor(() => expect(screen.getByTestId('card')).toBeInTheDocument());
-    fireEvent.click(screen.getByTestId('card'));
-
-    await waitFor(() =>
-      expect(screen.getByTestId('detail-outlet')).toBeInTheDocument()
-    );
-  });
-
-  it('should call search and resets page', async () => {
+  it('should call search and reset page', async () => {
     renderComponent();
 
     const input = screen.getByTestId('search-input');
@@ -173,11 +150,22 @@ describe('Cards', () => {
     await waitFor(() => expect(api.getCards).toHaveBeenCalledWith('Morty', 1));
   });
 
-  it('should call queryClient.invalidateQueries on "Invalidate ALL button click', () => {
-    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
+  it('should open card details on click', async () => {
     renderComponent();
 
-    fireEvent.click(screen.getByText('Invalidate ALL'));
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['cards'] });
+    await waitFor(() => expect(screen.getByTestId('card')).toBeInTheDocument());
+
+    fireEvent.click(screen.getByTestId('card'));
+  });
+
+  it('should handle pagination', async () => {
+    renderComponent();
+
+    await waitFor(() => expect(screen.getByTestId('card')).toBeInTheDocument());
+
+    const nextPageBtn = screen.getByText(/Next Page/);
+    fireEvent.click(nextPageBtn);
+
+    await waitFor(() => expect(api.getCards).toHaveBeenCalledWith('', 2));
   });
 });

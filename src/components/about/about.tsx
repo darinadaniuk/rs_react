@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { FaGithub } from 'react-icons/fa';
 
 import mePhoto from '@rs-react/assets/me-snow.jpg';
@@ -9,7 +10,7 @@ export function About() {
   return (
     <div className="about">
       <section className="about-photo">
-        <img src={mePhoto} alt="me" />
+        <Image src={mePhoto} alt="Me" width={200} height={320} unoptimized />
       </section>
       <section>
         <h3 className="about-name">Darya Daniuk</h3>
@@ -50,7 +51,13 @@ export function About() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src={rssLogo} alt="rss logo" />
+            <Image
+              src={rssLogo}
+              alt="rss logo"
+              width={24}
+              height={24}
+              unoptimized
+            />
           </a>
         </div>
       </section>

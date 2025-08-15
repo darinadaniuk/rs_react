@@ -1,11 +1,11 @@
 import path from 'path';
 
-import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  base: '/rs_react/',
-  plugins: [react()],
+  esbuild: {
+    jsx: 'automatic',
+  },
   resolve: {
     alias: {
       '@rs-react': path.resolve(__dirname, 'src'),
@@ -26,12 +26,11 @@ export default defineConfig({
         'src/**/*.spec.{js,jsx,ts,tsx}',
         'src/setup-tests.{js,ts}',
         'src/**/*.d.ts',
-        '**/index.ts',
         '**/interfaces/**',
-        '**/main.tsx',
         '**/*.hook.ts',
         '**/context/**',
         '**/*.config.ts',
+        'src/app/*',
       ],
       thresholds: {
         global: {

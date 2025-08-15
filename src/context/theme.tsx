@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useContext, useEffect } from 'react';
 
 import { useStorage } from '@rs-react/hooks/local-storage.hook';

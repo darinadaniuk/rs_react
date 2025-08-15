@@ -5,7 +5,7 @@ import { About } from './about';
 describe('About', () => {
   it('should render the photo with alt text "me"', () => {
     render(<About />);
-    const img = screen.getByAltText('me');
+    const img = screen.getByAltText('Me');
     expect(img).toBeInTheDocument();
   });
 

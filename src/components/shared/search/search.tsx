@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import {

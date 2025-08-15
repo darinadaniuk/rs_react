@@ -1,13 +1,37 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ], 
   "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "incremental": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "plugins": [{ "name": "next" }],
+    "useDefineForClassFields": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "erasableSyntaxOnly": true,
+    "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
       "@rs-react/*": ["src/*"]
-    },
-  }
+    }
+  },
+  "include": [
+    "./src",
+    "./dist/types/**/*.ts",
+    "./next-env.d.ts"
+  ],
+  "exclude": ["node_modules"]
 }

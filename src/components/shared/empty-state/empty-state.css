@@ -8,7 +8,7 @@
 }
 
 .empty-icon {
-  width: 70%;
+  width: 50%;
   height: auto;
   margin-bottom: 24px;
 }
@@ -16,4 +16,5 @@
 .empty-title {
   font-size: 36px;
   font-weight: 700;
+  margin-bottom: 18px;
 }

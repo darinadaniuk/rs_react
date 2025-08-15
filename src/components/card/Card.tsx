@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 import cardLogo from '@rs-react/assets/rick-and-morty.png';
 import { Checkbox } from '@rs-react/components';
 import { useSelectedItemsStore } from '@rs-react/store';
@@ -25,12 +27,14 @@ export function Card({ card, isActive, onCardClick }: CardProps) {
       className={`card ${isActive ? 'active' : ''}`}
       onClick={() => onCardClick?.(card.id)}
     >
-      <img className="card-logo" src={cardLogo} alt="logo" />
-      <img
-        data-testid="character-img"
-        className="card-image"
+      <Image src={cardLogo} alt="logo" width={200} height={320} unoptimized />
+      <Image
         src={card.image}
         alt={card.name}
+        width={200}
+        height={320}
+        data-testid="character-img"
+        className="card-image"
       />
       <div className="card-footer">
         <div>

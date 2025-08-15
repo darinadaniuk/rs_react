@@ -1,3 +1,6 @@
+'use client';
+
+import Image from 'next/image';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 import noDataIcon from '@rs-react/assets/page-not-found.svg';
@@ -32,7 +35,14 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="error">
-          <img className="error-icon" src={noDataIcon} alt="No data" />
+          <Image
+            className="error-icon"
+            src={noDataIcon}
+            alt="No data"
+            width={200}
+            height={320}
+            unoptimized
+          />
           <h3 className="error-title">Something went wrong</h3>
           <p>Error Boundary happened</p>
           <p>Please try refreshing the page</p>
