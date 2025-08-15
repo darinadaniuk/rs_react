@@ -173,11 +173,11 @@ describe('Cards', () => {
     await waitFor(() => expect(api.getCards).toHaveBeenCalledWith('Morty', 1));
   });
 
-  it('should call queryClient.invalidateQueries on "Invalidate Cards" button click', () => {
+  it('should call queryClient.invalidateQueries on "Invalidate ALL button click', () => {
     const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
     renderComponent();
 
-    fireEvent.click(screen.getByText('Invalidate Cards'));
+    fireEvent.click(screen.getByText('Invalidate ALL'));
     expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['cards'] });
   });
 });

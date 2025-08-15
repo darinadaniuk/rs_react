@@ -58,6 +58,7 @@ export function Cards() {
     data: cardsResponse,
     isLoading: isCardsLoading,
     isError: isCardsError,
+    error: cardsError,
   } = useCardsQuery(searchTerm, page);
 
   const { data: cardDetail, isLoading: isCardDetailLoading } = useCardByIdQuery(
@@ -65,16 +66,23 @@ export function Cards() {
   );
 
   const cards = cardsResponse?.results ?? [];
-  const totalPages = cardsResponse?.info.pages ?? 1;
-  const noData = cards.length === 0 || isCardsError;
+  const totalPages = cardsResponse?.info?.pages ?? 1;
+  const noData = cards.length === 0;
 
   const cardsContentClass = classNames('cards-content', {
-    'no-data': noData,
+    'no-data': noData || cardsError,
     loading: isCardsLoading,
   });
 
-  const refreshCards = () => {
+  const refreshAll = () => {
     queryClient.invalidateQueries({ queryKey: ['cards'] });
+  };
+
+  const refreshPage = () => {
+    queryClient.invalidateQueries({
+      queryKey: ['cards', searchTerm, page],
+      exact: true,
+    });
   };
 
   const refreshCardDetails = () => {
@@ -149,7 +157,8 @@ export function Cards() {
         </div>
         <div className="demo-section">
           <p>Manual control buttons for demo</p>
-          <Button text="Invalidate Cards" onClick={refreshCards} />
+          <Button text="Invalidate ALL" onClick={refreshAll} />
+          <Button text="Invalidate PAGE" onClick={refreshPage} />
           <Button text="Invalidate Card Detail" onClick={refreshCardDetails} />
           <Button text="Trigger fetch" onClick={immediateCardsRefresh} />
         </div>
@@ -158,6 +167,16 @@ export function Cards() {
           {isCardsLoading ? (
             <div className="cards-loader" data-testid="loader">
               <Spinner />
+            </div>
+          ) : isCardsError ? (
+            <div className="cards-error" data-testid="error">
+              <EmptyState
+                message={
+                  (cardsError as Error)?.message ??
+                  'Something went wrong while fetching cards'
+                }
+              />
+              <Button text="Retry" onClick={refreshAll} />
             </div>
           ) : noData ? (
             <div className="cards-empty-state" data-testid="empty-state">

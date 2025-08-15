@@ -15,7 +15,11 @@ export const getCards = async (
 
   const url = `${CHARACTER_URL}?${params.toString()}`;
   const response = await fetch(url);
-  const data: CardsApiResponse = await response.json();
+  const data: CardsApiResponse & { error?: string } = await response.json();
+
+  if (data.error) {
+    throw new Error(data.error);
+  }
 
   return data;
 };
