@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import classNames from 'classnames';
 import { createContext, useEffect, useState } from 'react';
 import {
@@ -7,7 +8,6 @@ import {
   useParams,
 } from 'react-router-dom';
 
-import { getCardById, getCards } from '@rs-react/api';
 import {
   EmptyState,
   Pagination,
@@ -15,17 +15,15 @@ import {
   Spinner,
   Card,
   CardSelectionFlyout,
+  Button,
 } from '@rs-react/components';
-
-import type {
-  CardItem,
-  CardsApiResponse,
-  CardsState,
-} from '@rs-react/interfaces';
-
-import './cards.css';
+import { useCardsQuery, useCardByIdQuery } from '@rs-react/hooks';
 import { useStorage } from '@rs-react/hooks/local-storage.hook';
 import { useSelectedItemsStore } from '@rs-react/store';
+
+import type { CardItem } from '@rs-react/interfaces';
+
+import './cards.css';
 
 export const CardDetailContext = createContext<CardItem | undefined>(undefined);
 
@@ -47,22 +45,55 @@ export function Cards() {
     { failoverValue: '' }
   );
   const initialSearchTerm = searchParams.get('search') ?? storedSearchTerm;
-  const [cards, setCards] = useState<CardsState['cards']>([]);
-  const [activeCardId, setActiveCardId] = useState<number | null>(null);
-  const [cardDetail, setCardDetail] = useState<CardItem | undefined>(undefined);
-  const [cardDetailLoading, setCardDetailLoading] = useState(false);
 
   const [page, setPage] = useState<number>(initialPage);
-  const [totalPages, setTotalPages] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [activeCardId, setActiveCardId] = useState<number | null>(
+    activeIdFromUrl
+  );
 
-  const noData = !cards.length || error;
+  const queryClient = useQueryClient();
+
+  const {
+    data: cardsResponse,
+    isLoading: isCardsLoading,
+    isError: isCardsError,
+    error: cardsError,
+  } = useCardsQuery(searchTerm, page);
+
+  const { data: cardDetail, isLoading: isCardDetailLoading } = useCardByIdQuery(
+    activeIdFromUrl ?? 0
+  );
+
+  const cards = cardsResponse?.results ?? [];
+  const totalPages = cardsResponse?.info?.pages ?? 1;
+  const noData = cards.length === 0;
+
   const cardsContentClass = classNames('cards-content', {
-    'no-data': noData,
-    loading,
+    'no-data': noData || cardsError,
+    loading: isCardsLoading,
   });
+
+  const refreshAll = () => {
+    queryClient.invalidateQueries({ queryKey: ['cards'] });
+  };
+
+  const refreshPage = () => {
+    queryClient.invalidateQueries({
+      queryKey: ['cards', searchTerm, page],
+      exact: true,
+    });
+  };
+
+  const refreshCardDetails = () => {
+    if (activeCardId) {
+      queryClient.invalidateQueries({ queryKey: ['card', activeCardId] });
+    }
+  };
+
+  const immediateCardsRefresh = () => {
+    queryClient.refetchQueries({ queryKey: ['cards'], type: 'active' });
+  };
 
   useEffect(() => {
     const newParams = new URLSearchParams();
@@ -77,50 +108,21 @@ export function Cards() {
     if (newParams.toString() !== searchParams.toString()) {
       setSearchParams(newParams);
     }
-  }, [searchTerm, page]);
+  }, [searchTerm, page, searchParams, setSearchParams]);
 
   useEffect(() => {
     setStoredSearchTerm(searchTerm);
   }, [searchTerm, setStoredSearchTerm]);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
+    setActiveCardId(activeIdFromUrl);
+  }, [activeIdFromUrl]);
 
-    getCards(searchTerm, page)
-      .then((data: CardsApiResponse) => {
-        setCards(data.results);
-        setTotalPages(data.info.pages);
-        syncActiveCardWithUrl(data.results, activeIdFromUrl);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setCards([]);
-        setCardDetail(undefined);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [page, searchTerm]);
-
-  const syncActiveCardWithUrl = (
-    cards: CardItem[],
-    activeIdFromUrl: number | null
-  ) => {
-    if (activeIdFromUrl && cards.length) {
-      const found = cards.find((c) => c.id === activeIdFromUrl);
-      if (found) {
-        setActiveCardId(found.id);
-        setCardDetail(found);
-      } else {
-        setActiveCardId(null);
-        setCardDetail(undefined);
-        navigate({
-          pathname: '',
-          search: searchParams.toString(),
-        });
-      }
-    }
+  const onCardClick = (cardId: number) => {
+    navigate({
+      pathname: `details/${cardId}`,
+      search: `?${searchParams.toString()}`,
+    });
   };
 
   const search = (value: string): void => {
@@ -130,23 +132,6 @@ export function Cards() {
 
   const changePage = (value: number): void => {
     setPage(value);
-  };
-
-  const onCardClick = async (cardId: number): Promise<void> => {
-    setCardDetailLoading(true);
-    try {
-      const detail = await getCardById(cardId);
-      setCardDetail(detail);
-      setActiveCardId(cardId);
-      navigate({
-        pathname: `details/${cardId}`,
-        search: `?${searchParams.toString()}`,
-      });
-    } catch {
-      setError('Failed to load card details');
-    } finally {
-      setCardDetailLoading(false);
-    }
   };
 
   return (
@@ -170,11 +155,28 @@ export function Cards() {
             </div>
           )}
         </div>
+        <div className="demo-section">
+          <p>Manual control buttons for demo</p>
+          <Button text="Invalidate ALL" onClick={refreshAll} />
+          <Button text="Invalidate PAGE" onClick={refreshPage} />
+          <Button text="Invalidate Card Detail" onClick={refreshCardDetails} />
+          <Button text="Trigger fetch" onClick={immediateCardsRefresh} />
+        </div>
 
         <div className={cardsContentClass}>
-          {loading ? (
+          {isCardsLoading ? (
             <div className="cards-loader" data-testid="loader">
               <Spinner />
+            </div>
+          ) : isCardsError ? (
+            <div className="cards-error" data-testid="error">
+              <EmptyState
+                message={
+                  (cardsError as Error)?.message ??
+                  'Something went wrong while fetching cards'
+                }
+              />
+              <Button text="Retry" onClick={refreshAll} />
             </div>
           ) : noData ? (
             <div className="cards-empty-state" data-testid="empty-state">
@@ -197,10 +199,10 @@ export function Cards() {
           ) : null}
         </div>
       </div>
-      {/* ToDo investigate styles incapsulation */}
+
       <div className="card-details-wrapper">
         <CardDetailContext.Provider value={cardDetail}>
-          {cardDetailLoading ? (
+          {isCardDetailLoading ? (
             <div className="cards-loader" data-testid="card-detail-loader">
               <Spinner />
             </div>

@@ -20,6 +20,7 @@ export function CardDetails() {
       <Button text="Close" onClick={close} />
       {cardDetail && (
         <div className="details-data">
+          <img src={cardDetail.image} alt={cardDetail.name} />
           <p>Id: {cardDetail.id}</p>
           <p>Name: {cardDetail.name}</p>
           <p>Species: {cardDetail.species}</p>

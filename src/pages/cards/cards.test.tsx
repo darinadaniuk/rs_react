@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { vi, type Mock } from 'vitest';
@@ -81,7 +82,11 @@ vi.mock('react-router-dom', async () => {
 });
 
 describe('Cards', () => {
+  let queryClient: QueryClient;
+
   beforeEach(() => {
+    queryClient = new QueryClient();
+
     vi.spyOn(api, 'getCards').mockResolvedValue(
       mockResponse as CardsApiResponse
     );
@@ -91,26 +96,29 @@ describe('Cards', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    queryClient.clear();
   });
 
   const renderComponent = () =>
     render(
-      <MemoryRouter initialEntries={['/']}>
-        <Routes>
-          <Route path="/" element={<Cards />}>
-            <Route
-              path="details/:id"
-              element={<div data-testid="detail-outlet" />}
-            />
-          </Route>
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/']}>
+          <Routes>
+            <Route path="/" element={<Cards />}>
+              <Route
+                path="details/:id"
+                element={<div data-testid="detail-outlet" />}
+              />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     );
 
-  it('renders loading state then cards', async () => {
+  it('should render loading state then cards', async () => {
     renderComponent();
 
-    expect(screen.getByTestId('loader')).toBeInTheDocument();
+    expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId('card')).toBeInTheDocument());
   });
 
@@ -126,16 +134,26 @@ describe('Cards', () => {
     );
   });
 
-  it('handles API error', async () => {
-    (api.getCards as Mock).mockRejectedValueOnce(new Error('API failed'));
+  it('should render loading state then cards', async () => {
+    renderComponent();
+
+    expect(screen.getByTestId('loader')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('card')).toBeInTheDocument());
+  });
+
+  it('should render empty state if no cards returned', async () => {
+    (api.getCards as Mock).mockResolvedValueOnce({
+      results: [],
+      info: { pages: 1 },
+    });
 
     renderComponent();
     await waitFor(() =>
-      expect(screen.getByTestId('empty')).toBeInTheDocument()
+      expect(screen.getByTestId('empty-state')).toBeInTheDocument()
     );
   });
 
-  it('updates card detail on card click', async () => {
+  it('should update card detail on card click', async () => {
     renderComponent();
 
     await waitFor(() => expect(screen.getByTestId('card')).toBeInTheDocument());
@@ -146,12 +164,20 @@ describe('Cards', () => {
     );
   });
 
-  it('calls search and resets page', async () => {
+  it('should call search and resets page', async () => {
     renderComponent();
 
     const input = screen.getByTestId('search-input');
     fireEvent.change(input, { target: { value: 'Morty' } });
 
     await waitFor(() => expect(api.getCards).toHaveBeenCalledWith('Morty', 1));
+  });
+
+  it('should call queryClient.invalidateQueries on "Invalidate ALL button click', () => {
+    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
+    renderComponent();
+
+    fireEvent.click(screen.getByText('Invalidate ALL'));
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['cards'] });
   });
 });
