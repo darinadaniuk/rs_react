@@ -7,6 +7,7 @@ import { useSelectedItemsStore } from '@rs-react/store';
 import type { CardItem } from '@rs-react/interfaces';
 
 import './card.css';
+import React from 'react';
 
 interface CardProps {
   card: CardItem;

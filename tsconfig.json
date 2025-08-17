@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -11,7 +15,11 @@
     "incremental": true,
     "noEmit": true,
     "jsx": "preserve",
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "useDefineForClassFields": true,
     "esModuleInterop": true,
     "allowJs": true,
@@ -25,13 +33,25 @@
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@rs-react/*": ["src/*"]
+      "@rs-react/*": ["src/*"],
+      "@rs-react/components": ["src/components/index.ts"],
+      "@rs-react/components/*": ["src/components/*"],
+      "@rs-react/hooks": ["src/hooks/index.ts"],
+      "@rs-react/store": ["src/store/index.ts"],
+      "@rs-react/interfaces": ["src/interfaces/index.ts"],
+      "@rs-react/constants": ["src/constants/index.ts"],
+      "@rs-react/context": ["src/context/index.ts"],
+      "@rs-react/assets/*": ["src/assets/*"]
     }
   },
   "include": [
-    "./src",
     "./dist/types/**/*.ts",
-    "./next-env.d.ts"
+    "./next-env.d.ts",
+    "./src",
+    ".next/types/**/*.ts",
+    "./global.d.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

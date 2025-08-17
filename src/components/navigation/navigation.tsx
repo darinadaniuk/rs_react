@@ -1,16 +1,21 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import React from 'react';
+
+import { Link } from '@rs-react/i18n/navigation';
 import './navigation.css';
 
 export function Navigation() {
+  const t = useTranslations('nav');
+
   return (
     <nav className="navigation">
       <Link className="navigation-link" href="/cards">
-        Home
+        {t('home')}
       </Link>
       <Link className="navigation-link" href="/about">
-        About
+        {t('about')}
       </Link>
     </nav>
   );

@@ -3,10 +3,10 @@
 import Image from 'next/image';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 
-import noDataIcon from '@rs-react/assets/page-not-found.svg';
-import { Button } from '@rs-react/components/shared/button/button';
+import { Button } from '@rs-react/components';
 
 import './error-boundary.css';
+import React from 'react';
 
 interface Props {
   children: ReactNode;
@@ -37,7 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
         <div className="error">
           <Image
             className="error-icon"
-            src={noDataIcon}
+            src="/page-not-found.svg"
             alt="No data"
             width={200}
             height={320}

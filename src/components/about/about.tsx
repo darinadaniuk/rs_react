@@ -1,59 +1,61 @@
+'use client';
+
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import React from 'react';
 import { FaGithub } from 'react-icons/fa';
 
 import mePhoto from '@rs-react/assets/me-snow.jpg';
-import rssLogo from '@rs-react/assets/rss-logo.svg';
-
 import './about.css';
 
 export function About() {
+  const t = useTranslations('about');
+
   return (
     <div className="about">
       <section className="about-photo">
-        <Image src={mePhoto} alt="Me" width={200} height={320} unoptimized />
+        <Image
+          src={mePhoto}
+          alt={t('photoAlt')}
+          width={200}
+          height={320}
+          unoptimized
+        />
       </section>
+
       <section>
-        <h3 className="about-name">Darya Daniuk</h3>
-        <p className="about-title">RSS React course student</p>
+        <h3 className="about-name">{t('name')}</h3>
+        <p className="about-title">{t('title')}</p>
+
         <div className="about-introduction">
-          <p>
-            {
-              'Hi! My name is Darya. Thanks for taking the time to read my intro.'
-            }
-          </p>
-          <p>
-            {
-              "I currently live in Ottawa, Canada, where I've been for the past three years after moving here with my family and our two cats. Before settling in Canada, we lived in Kyiv, Ukraine."
-            }
-          </p>
-          <p>
-            {
-              "In my free time, I enjoy knitting and reading. Lately, I've been diving into books my son reads, and the last one we read together was Diary of a Wimpy Kid. It had me laughing out loud. so hilarious!"
-            }
-          </p>
-          <p>
-            {
-              "I'm always excited to meet new people, learn new things, and share experiences. Feel free to stop by and say hi!"
-            }
-          </p>
+          <p>{t('p1')}</p>
+          <p>{t('p2')}</p>
+          <p>{t('p3')}</p>
+          <p>{t('p4')}</p>
         </div>
+
         <div className="about-links">
           <a
             href="https://github.com/darinadaniuk"
             target="_blank"
             rel="noopener noreferrer"
             data-testid="github-link"
+            aria-label={t('githubAria')}
+            title={t('githubAria')}
           >
             <FaGithub size={32} color="#64656a" />
           </a>
+
           <a
             href="https://rs.school/courses/reactjs"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={t('rssAria')}
+            title={t('rssAria')}
           >
             <Image
-              src={rssLogo}
-              alt="rss logo"
+              src="/rss-logo.svg"
+              alt={t('rssAlt')}
               width={24}
               height={24}
               unoptimized

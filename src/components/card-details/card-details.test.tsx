@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
 import { vi } from 'vitest';
 
 import { CardDetailContext } from '@rs-react/context';
@@ -8,21 +9,23 @@ import { CardDetails } from './card-details';
 import type { CardItem } from '@rs-react/interfaces';
 
 const mockPush = vi.fn();
-const mockSearchParams = {
-  toString: () => '',
-};
+const mockSearchParams = { toString: () => '' };
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockPush }),
   useSearchParams: () => mockSearchParams,
+  usePathname: () => '/',
+  redirect: vi.fn(),
+  permanentRedirect: vi.fn(),
+  notFound: vi.fn(),
 }));
 
-vi.mock('next/image', () => ({
-  __esModule: true,
-  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
-    return <img {...props} />;
-  },
-}));
+vi.mock('next/image', () => {
+  const Img = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    <img {...props} />
+  );
+  return { __esModule: true, default: Img };
+});
 
 const mockCardDetail: Partial<CardItem> = {
   id: 1,
@@ -32,10 +35,7 @@ const mockCardDetail: Partial<CardItem> = {
   status: 'Alive',
   type: '',
   image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
-  location: {
-    name: 'Earth (C-137)',
-    url: '',
-  },
+  location: { name: 'Earth (C-137)', url: '' },
   created: '2017-11-04T18:48:46.250Z',
 };
 

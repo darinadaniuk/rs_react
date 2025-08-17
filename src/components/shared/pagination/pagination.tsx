@@ -34,8 +34,9 @@ export function Pagination({
         className="pagination-button nav-button"
         onClick={prev}
         disabled={currentPage === 1}
+        data-testid="prev-button"
       >
-        Prev
+        {'<'}
       </button>
 
       {pages.map((page, index) =>
@@ -58,8 +59,9 @@ export function Pagination({
         className="pagination-button nav-button"
         onClick={next}
         disabled={currentPage === total}
+        data-testid="next-button"
       >
-        Next
+        {'>'}
       </button>
     </div>
   );

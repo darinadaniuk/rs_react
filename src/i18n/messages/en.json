@@ -1,0 +1,30 @@
+{
+  "about": {
+    "photoAlt": "My photo",
+    "name": "Darya Daniuk",
+    "title": "RSS React course student",
+    "p1": "Hi! My name is Darya. Thanks for taking the time to read my intro.",
+    "p2": "I currently live in Ottawa, Canada, where I've been for the past three years after moving here with my family and our two cats. Before settling in Canada, we lived in Kyiv, Ukraine.",
+    "p3": "In my free time, I enjoy knitting and reading. Lately, I've been diving into books my son reads, and the last one we read together was Diary of a Wimpy Kid. It had me laughing out loud—so hilarious!",
+    "p4": "I'm always excited to meet new people, learn new things, and share experiences. Feel free to stop by and say hi!",
+    "githubAria": "Open Darya's GitHub profile",
+    "rssAria": "Open RS School React course page",
+    "rssAlt": "RS School logo"
+  },
+  "footer": {
+    "copyright": "© 2025 All rights reserved"
+  },
+  "header": {
+    "title": "RSS React course",
+    "userIconAria": "User",
+    "name": "Darya"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About"
+  },
+  "search": {
+    "placeholder": "Search",
+    "ariaLabel": "Search input"
+  }
+}

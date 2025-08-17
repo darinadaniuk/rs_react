@@ -1,8 +1,7 @@
 import Image from 'next/image';
 
-import noDataIcon from '@rs-react/assets/page-not-found.svg';
-
 import './empty-state.css';
+import React from 'react';
 
 interface EmptyStateProps {
   message?: string;
@@ -17,7 +16,7 @@ export function EmptyState({
     <div className="empty-state">
       <Image
         className="empty-icon"
-        src={noDataIcon}
+        src="/page-not-found.svg"
         alt="No data"
         width={200}
         height={320}

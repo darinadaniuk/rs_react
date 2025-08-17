@@ -2,8 +2,9 @@
 
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import React from 'react';
 
-import { ErrorBoundary, Footer, Header } from '@rs-react/components';
+import { ErrorBoundary } from '@rs-react/components';
 import { ThemeProvider } from '@rs-react/context';
 import { queryClient } from '@rs-react/query-client.config';
 
@@ -20,9 +21,7 @@ export default function RootLayout({
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
             <ErrorBoundary>
-              <Header />
               <main className="content">{children}</main>
-              <Footer />
             </ErrorBoundary>
           </ThemeProvider>
           <ReactQueryDevtools initialIsOpen={false} />
