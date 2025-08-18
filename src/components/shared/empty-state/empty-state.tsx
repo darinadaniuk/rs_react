@@ -1,16 +1,29 @@
-import noDataIcon from '@rs-react/assets/page-not-found.svg';
+import Image from 'next/image';
 
 import './empty-state.css';
+import React from 'react';
 
 interface EmptyStateProps {
   message?: string;
+  title?: string;
 }
 
-export function EmptyState({ message = 'No data found' }: EmptyStateProps) {
+export function EmptyState({
+  message = 'No data found',
+  title = '',
+}: EmptyStateProps) {
   return (
     <div className="empty-state">
-      <img className="empty-icon" src={noDataIcon} alt="No data" />
-      <p className="empty-title">{message}</p>
+      <Image
+        className="empty-icon"
+        src="/page-not-found.svg"
+        alt="No data"
+        width={200}
+        height={320}
+        unoptimized
+      />
+      <p className="empty-title">{title}</p>
+      <p className="empty-subtitle">{message}</p>
     </div>
   );
 }

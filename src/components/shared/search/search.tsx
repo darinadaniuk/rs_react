@@ -1,13 +1,9 @@
-import { useEffect, useRef } from 'react';
+'use client';
+
+import { useTranslations } from 'next-intl';
+import React, { useEffect, useRef } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  fromEvent,
-  map,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { fromEvent, debounceTime, distinctUntilChanged, map } from 'rxjs';
 
 import { SEARCH_DEBOUNCE_DEFAULT } from '@rs-react/constants';
 import { useStorage } from '@rs-react/hooks/local-storage.hook';
@@ -27,23 +23,33 @@ export function Search({
   searchDebounce = SEARCH_DEBOUNCE_DEFAULT,
   search,
 }: SearchProps) {
+  const t = useTranslations('search');
   const inputRef = useRef<HTMLInputElement>(null);
-  const destroy$ = useRef(new Subject<void>()).current;
 
   const [searchValue, setSearchValue] = useStorage<string>('cardsSearchTerm', {
     failoverValue: '',
   });
 
+  const safeT = (key: string, fallback: string) => {
+    try {
+      return t(key);
+    } catch {
+      return fallback;
+    }
+  };
+
+  const ph = safeT('placeholder', placeholder);
+  const aria = safeT('ariaLabel', placeholder);
+
   useEffect(() => {
     const inputEl = inputRef.current;
     if (!inputEl) return;
 
-    fromEvent<InputEvent>(inputEl, 'input')
+    const sub = fromEvent<InputEvent>(inputEl, 'input')
       .pipe(
         map((event) => (event.target as HTMLInputElement).value),
         debounceTime(searchDebounce),
-        distinctUntilChanged(),
-        takeUntil(destroy$)
+        distinctUntilChanged()
       )
       .subscribe((value: string) => {
         const trimmed = value.trim();
@@ -51,16 +57,17 @@ export function Search({
         search(trimmed);
       });
 
-    return () => {
-      destroy$.next();
-      destroy$.complete();
-    };
-  }, [search, searchDebounce, setSearchValue, destroy$]);
+    return () => sub.unsubscribe();
+  }, [search, searchDebounce, setSearchValue]);
 
   return (
     <div className="search">
       {withSearchIcon && (
-        <div data-testid="search-icon" className="search-icon">
+        <div
+          data-testid="search-icon"
+          className="search-icon"
+          aria-hidden="true"
+        >
           <FaSearch className="icon" />
         </div>
       )}
@@ -69,7 +76,8 @@ export function Search({
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
         type="text"
-        placeholder={placeholder}
+        placeholder={ph}
+        aria-label={aria}
         data-testid="search-input"
         className={`search-input ${withSearchIcon ? 'with-icon' : ''}`}
       />

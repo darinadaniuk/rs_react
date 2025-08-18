@@ -1,79 +1,74 @@
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
 import { vi } from 'vitest';
 
 import { Search } from './search';
 
-const setSearchValueMock = vi.fn();
+const setStorageMock = vi.fn();
 
 vi.mock('@rs-react/hooks/local-storage.hook', () => ({
-  useStorage: () => ['', setSearchValueMock],
+  useStorage: () => ['', setStorageMock],
 }));
 
-beforeEach(() => {
-  vi.clearAllMocks();
-});
+vi.mock('next-intl', () => ({
+  useTranslations: () => () => {
+    throw new Error('no intl');
+  },
+}));
 
 describe('Search', () => {
-  it('should render input and search icon', () => {
-    render(<Search search={vi.fn()} withSearchIcon />);
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('should render input and icon when withSearchIcon is true', () => {
+    render(<Search search={vi.fn()} withSearchIcon placeholder="Search" />);
     expect(screen.getByTestId('search-input')).toBeInTheDocument();
     expect(screen.getByTestId('search-icon')).toBeInTheDocument();
   });
 
-  it('should render input placeholder', () => {
-    render(<Search search={vi.fn()} placeholder="Search characters" />);
-    expect(
-      screen.getByPlaceholderText('Search characters')
-    ).toBeInTheDocument();
-  });
-
-  it('should render without icon', () => {
+  it('should render without icon when withSearchIcon is false', () => {
     render(<Search search={vi.fn()} placeholder="Search" />);
     expect(screen.queryByTestId('search-icon')).not.toBeInTheDocument();
   });
 
-  describe('Local storage', () => {
-    it('should display search term from localStorage', () => {
-      vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('');
-      render(<Search search={vi.fn()} />);
-      expect(screen.getByTestId('search-input')).toHaveValue('');
-    });
-
-    it('should show empty input when nothing was saved', () => {
-      vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
-      render(<Search search={vi.fn()} />);
-      expect(screen.getByTestId('search-input')).toHaveValue('');
-    });
+  it('should use fallback placeholder and aria-label', () => {
+    render(<Search search={vi.fn()} placeholder="Search characters" />);
+    const input = screen.getByPlaceholderText('Search characters');
+    expect(input).toBeInTheDocument();
+    expect(input).toHaveAttribute('aria-label', 'Search characters');
   });
 
-  it('should not call search before debounce time', () => {
+  it('should not call search before debounce', () => {
     const searchFn = vi.fn();
+    render(
+      <Search search={searchFn} searchDebounce={500} placeholder="Search" />
+    );
+    const input = screen.getByTestId('search-input');
 
-    vi.useFakeTimers();
-    render(<Search search={searchFn} searchDebounce={500} />);
-    userEvent.type(screen.getByTestId('search-input'), 'test');
+    fireEvent.input(input, { target: { value: 'test' } });
     vi.advanceTimersByTime(300);
+
     expect(searchFn).not.toHaveBeenCalled();
   });
 
-  it('should call search after debounce', (done) => {
+  it('should call search after debounce with trimmed value', () => {
     const searchFn = vi.fn();
-    const debounceTime = 300;
-
-    render(<Search search={searchFn} searchDebounce={debounceTime} />);
+    render(
+      <Search search={searchFn} searchDebounce={300} placeholder="Search" />
+    );
     const input = screen.getByTestId('search-input');
 
-    userEvent.type(input, 'morty').then(() => {
-      setTimeout(() => {
-        try {
-          expect(searchFn).toHaveBeenCalledTimes(1);
-          expect(searchFn).toHaveBeenCalledWith('morty');
-          done();
-        } catch (error) {
-          done(error);
-        }
-      }, debounceTime + 50);
-    });
+    fireEvent.input(input, { target: { value: '  morty  ' } });
+    vi.advanceTimersByTime(300);
+
+    expect(setStorageMock).toHaveBeenCalledWith('morty');
+    expect(searchFn).toHaveBeenCalledTimes(1);
+    expect(searchFn).toHaveBeenCalledWith('morty');
   });
 });

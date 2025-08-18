@@ -1,9 +1,14 @@
+'use client';
+
 import './footer.css';
+import { useTranslations } from 'next-intl';
 
 export function Footer() {
+  const t = useTranslations('footer');
+
   return (
     <footer className="footer">
-      <p>© 2025 All rights reserved</p>
+      <p>{t('copyright')}</p>
     </footer>
   );
 }

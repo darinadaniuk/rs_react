@@ -9,32 +9,33 @@ export function useStorage<T>(
   options: ReadFromStorageOptions<T>,
   storageType: 'localStorage' | 'sessionStorage' = 'localStorage'
 ): [T, (newValue: T) => void] {
-  const [value, setValue] = useState<T>(() => {
-    const storage =
-      storageType === 'localStorage' ? localStorage : sessionStorage;
-    const item = storage.getItem(key);
-    try {
-      return item ? JSON.parse(item) : options.failoverValue;
-    } catch {
-      return options.failoverValue;
-    }
-  });
+  const [value, setValue] = useState<T>(options.failoverValue);
+  const isBrowser = typeof window !== 'undefined';
 
   useEffect(() => {
+    if (!isBrowser) return;
+
     const storage =
-      storageType === 'localStorage' ? localStorage : sessionStorage;
+      storageType === 'localStorage'
+        ? window.localStorage
+        : window.sessionStorage;
     const item = storage.getItem(key);
+
     try {
       setValue(item ? JSON.parse(item) : options.failoverValue);
     } catch {
       setValue(options.failoverValue);
     }
-  }, [key, options.failoverValue, storageType]);
+  }, [key, options.failoverValue, storageType, isBrowser]);
 
   const updateValue = useCallback(
     (newValue: T) => {
+      if (!isBrowser) return;
+
       const storage =
-        storageType === 'localStorage' ? localStorage : sessionStorage;
+        storageType === 'localStorage'
+          ? window.localStorage
+          : window.sessionStorage;
       try {
         storage.setItem(key, JSON.stringify(newValue));
         setValue(newValue);
@@ -42,7 +43,7 @@ export function useStorage<T>(
         console.error('Failed to set to storage');
       }
     },
-    [key, storageType]
+    [key, storageType, isBrowser]
   );
 
   return [value, updateValue];
