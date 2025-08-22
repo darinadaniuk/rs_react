@@ -49,7 +49,7 @@ export function Search({
       .pipe(
         map((event) => (event.target as HTMLInputElement).value),
         debounceTime(searchDebounce),
-        distinctUntilChanged()
+        distinctUntilChanged(),
       )
       .subscribe((value: string) => {
         const trimmed = value.trim();
@@ -63,11 +63,7 @@ export function Search({
   return (
     <div className="search">
       {withSearchIcon && (
-        <div
-          data-testid="search-icon"
-          className="search-icon"
-          aria-hidden="true"
-        >
+        <div data-testid="search-icon" className="search-icon" aria-hidden="true">
           <FaSearch className="icon" />
         </div>
       )}

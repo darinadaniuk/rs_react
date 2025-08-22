@@ -73,9 +73,7 @@ describe('Card', () => {
 
   it('should call onCardClick with card id when clicked', () => {
     const onCardClick = vi.fn();
-    const { container } = render(
-      <Card card={mockCard} onCardClick={onCardClick} />
-    );
+    const { container } = render(<Card card={mockCard} onCardClick={onCardClick} />);
     const cardDiv = container.firstChild as HTMLElement;
 
     cardDiv.click();

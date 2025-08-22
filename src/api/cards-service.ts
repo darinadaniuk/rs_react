@@ -4,7 +4,7 @@ import type { CardItem, CardsApiResponse } from '@rs-react/interfaces';
 
 export const getCards = async (
   searchTerm: string = '',
-  page: number = 1
+  page: number = 1,
 ): Promise<CardsApiResponse> => {
   const params = new URLSearchParams();
 

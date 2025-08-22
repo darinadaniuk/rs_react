@@ -14,13 +14,7 @@ export function About() {
   return (
     <div className="about">
       <section className="about-photo">
-        <Image
-          src={mePhoto}
-          alt={t('photoAlt')}
-          width={200}
-          height={320}
-          unoptimized
-        />
+        <Image src={mePhoto} alt={t('photoAlt')} width={200} height={320} unoptimized />
       </section>
 
       <section>
@@ -53,13 +47,7 @@ export function About() {
             aria-label={t('rssAria')}
             title={t('rssAria')}
           >
-            <Image
-              src="/rss-logo.svg"
-              alt={t('rssAlt')}
-              width={24}
-              height={24}
-              unoptimized
-            />
+            <Image src="/rss-logo.svg" alt={t('rssAlt')} width={24} height={24} unoptimized />
           </a>
         </div>
       </section>

@@ -8,10 +8,7 @@ interface EmptyStateProps {
   title?: string;
 }
 
-export function EmptyState({
-  message = 'No data found',
-  title = '',
-}: EmptyStateProps) {
+export function EmptyState({ message = 'No data found', title = '' }: EmptyStateProps) {
   return (
     <div className="empty-state">
       <Image

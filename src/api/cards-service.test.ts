@@ -25,7 +25,7 @@ describe('Cards service', () => {
     const data = await getCards('morty', 2);
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://rickandmortyapi.com/api/character?name=morty&page=2'
+      'https://rickandmortyapi.com/api/character?name=morty&page=2',
     );
     expect(data).toEqual(mockSuccessResponse);
   });
@@ -39,9 +39,7 @@ describe('Cards service', () => {
 
     const data = await getCards();
 
-    expect(mockFetch).toHaveBeenCalledWith(
-      'https://rickandmortyapi.com/api/character?page=1'
-    );
+    expect(mockFetch).toHaveBeenCalledWith('https://rickandmortyapi.com/api/character?page=1');
     expect(data).toEqual(mockSuccessResponse);
   });
 
@@ -63,9 +61,7 @@ describe('Cards service', () => {
 
     const data = await getCardById(1);
 
-    expect(mockFetch).toHaveBeenCalledWith(
-      'https://rickandmortyapi.com/api/character/1'
-    );
+    expect(mockFetch).toHaveBeenCalledWith('https://rickandmortyapi.com/api/character/1');
     expect(data).toEqual(mockCard);
   });
 
@@ -76,8 +72,6 @@ describe('Cards service', () => {
 
     global.fetch = mockFetch as unknown as typeof fetch;
 
-    await expect(getCardById(9999)).rejects.toThrow(
-      'Card with id 9999 not found'
-    );
+    await expect(getCardById(9999)).rejects.toThrow('Card with id 9999 not found');
   });
 });

@@ -9,11 +9,7 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export function Pagination({
-  total,
-  currentPage,
-  onPageChange,
-}: PaginationProps) {
+export function Pagination({ total, currentPage, onPageChange }: PaginationProps) {
   const pages = getVisiblePages(total, currentPage);
 
   const prev = () => {
@@ -52,7 +48,7 @@ export function Pagination({
           >
             {page}
           </button>
-        )
+        ),
       )}
 
       <button

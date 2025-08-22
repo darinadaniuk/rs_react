@@ -30,18 +30,12 @@ export function Cards() {
   const pathname = usePathname();
 
   const selectedCards = useSelectedItemsStore((state) => state.selectedCards);
-  const selectionData = selectedCards.map((card) => ({ ...card })) as Record<
-    string,
-    unknown
-  >[];
+  const selectionData = selectedCards.map((card) => ({ ...card })) as Record<string, unknown>[];
 
   const initialPage = Number(searchParams.get('page') ?? '1');
-  const [storedSearchTerm, setStoredSearchTerm] = useStorage<string>(
-    'cardsSearchTerm',
-    {
-      failoverValue: '',
-    }
-  );
+  const [storedSearchTerm, setStoredSearchTerm] = useStorage<string>('cardsSearchTerm', {
+    failoverValue: '',
+  });
   const initialSearchTerm = searchParams.get('search') ?? storedSearchTerm;
 
   const [page, setPage] = useState<number>(initialPage);
@@ -55,9 +49,7 @@ export function Cards() {
     error: cardsError,
   } = useCardsQuery(searchTerm, page);
 
-  const { data: cardDetail, isLoading: isCardDetailLoading } = useCardByIdQuery(
-    activeCardId ?? 0
-  );
+  const { data: cardDetail, isLoading: isCardDetailLoading } = useCardByIdQuery(activeCardId ?? 0);
 
   const cards = cardsResponse?.results ?? [];
   const totalPages = cardsResponse?.info?.pages ?? 1;
@@ -103,19 +95,11 @@ export function Cards() {
       <div className="cards">
         <div className="cards-top-section">
           <div className="cards-search">
-            <Search
-              placeholder="Search by name"
-              withSearchIcon={true}
-              search={search}
-            />
+            <Search placeholder="Search by name" withSearchIcon={true} search={search} />
           </div>
           {!noData && (
             <div className="pagination">
-              <Pagination
-                total={totalPages}
-                currentPage={page}
-                onPageChange={changePage}
-              />
+              <Pagination total={totalPages} currentPage={page} onPageChange={changePage} />
             </div>
           )}
         </div>
@@ -129,8 +113,7 @@ export function Cards() {
             <div className="cards-error" data-testid="error">
               <EmptyState
                 message={
-                  (cardsError as Error)?.message ??
-                  'Something went wrong while fetching cards'
+                  (cardsError as Error)?.message ?? 'Something went wrong while fetching cards'
                 }
               />
             </div>

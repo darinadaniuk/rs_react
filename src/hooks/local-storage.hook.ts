@@ -7,7 +7,7 @@ interface ReadFromStorageOptions<T> {
 export function useStorage<T>(
   key: string,
   options: ReadFromStorageOptions<T>,
-  storageType: 'localStorage' | 'sessionStorage' = 'localStorage'
+  storageType: 'localStorage' | 'sessionStorage' = 'localStorage',
 ): [T, (newValue: T) => void] {
   const [value, setValue] = useState<T>(options.failoverValue);
   const isBrowser = typeof window !== 'undefined';
@@ -15,10 +15,7 @@ export function useStorage<T>(
   useEffect(() => {
     if (!isBrowser) return;
 
-    const storage =
-      storageType === 'localStorage'
-        ? window.localStorage
-        : window.sessionStorage;
+    const storage = storageType === 'localStorage' ? window.localStorage : window.sessionStorage;
     const item = storage.getItem(key);
 
     try {
@@ -32,10 +29,7 @@ export function useStorage<T>(
     (newValue: T) => {
       if (!isBrowser) return;
 
-      const storage =
-        storageType === 'localStorage'
-          ? window.localStorage
-          : window.sessionStorage;
+      const storage = storageType === 'localStorage' ? window.localStorage : window.sessionStorage;
       try {
         storage.setItem(key, JSON.stringify(newValue));
         setValue(newValue);
@@ -43,7 +37,7 @@ export function useStorage<T>(
         console.error('Failed to set to storage');
       }
     },
-    [key, storageType, isBrowser]
+    [key, storageType, isBrowser],
   );
 
   return [value, updateValue];

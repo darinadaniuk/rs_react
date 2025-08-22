@@ -23,9 +23,7 @@ vi.mock('next-intl', () => ({
 }));
 
 vi.mock('next/image', () => {
-  const Img = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
-    <img {...props} />
-  );
+  const Img = (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} />;
   return { __esModule: true, default: Img };
 });
 
@@ -56,44 +54,36 @@ describe('About', () => {
   it('should render all introduction paragraphs', () => {
     render(<About />);
     expect(
-      screen.getByText(
-        /Hi! My name is Darya\. Thanks for taking the time to read my intro\./i
-      )
+      screen.getByText(/Hi! My name is Darya\. Thanks for taking the time to read my intro\./i),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /I currently live in Ottawa, Canada, where I've been for the past three years/i
-      )
+        /I currently live in Ottawa, Canada, where I've been for the past three years/i,
+      ),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /In my free time, I enjoy knitting and reading\. Lately, I've been diving into books my son/i
-      )
+        /In my free time, I enjoy knitting and reading\. Lately, I've been diving into books my son/i,
+      ),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /I'm always excited to meet new people, learn new things, and share experiences\./i
-      )
+        /I'm always excited to meet new people, learn new things, and share experiences\./i,
+      ),
     ).toBeInTheDocument();
   });
 
   it('should render the github link with correct href and icon', () => {
     render(<About />);
     const githubLink = screen.getByTestId('github-link');
-    expect(githubLink).toHaveAttribute(
-      'href',
-      'https://github.com/darinadaniuk'
-    );
+    expect(githubLink).toHaveAttribute('href', 'https://github.com/darinadaniuk');
     expect(githubLink.querySelector('svg')).toBeInTheDocument();
   });
 
   it('should render the RSS School link with correct href and image', () => {
     render(<About />);
     const rssLink = screen.getByRole('link', { name: /rss school/i });
-    expect(rssLink).toHaveAttribute(
-      'href',
-      'https://rs.school/courses/reactjs'
-    );
+    expect(rssLink).toHaveAttribute('href', 'https://rs.school/courses/reactjs');
     expect(screen.getByAltText(/rss logo/i)).toBeInTheDocument();
   });
 });

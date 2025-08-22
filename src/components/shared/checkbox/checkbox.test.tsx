@@ -10,18 +10,13 @@ describe('<Checkbox />', () => {
   });
 
   it('should render with label', () => {
-    render(
-      <Checkbox checked={false} onChange={() => {}} label="Accept terms" />
-    );
+    render(<Checkbox checked={false} onChange={() => {}} label="Accept terms" />);
     expect(screen.getByText('Accept terms')).toBeInTheDocument();
   });
 
   it('should have correct aria-checked when checked', () => {
     render(<Checkbox checked={true} onChange={() => {}} />);
-    expect(screen.getByRole('checkbox')).toHaveAttribute(
-      'aria-checked',
-      'true'
-    );
+    expect(screen.getByRole('checkbox')).toHaveAttribute('aria-checked', 'true');
   });
 
   it('should call onChange with true when initially unchecked and clicked', () => {

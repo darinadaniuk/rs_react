@@ -21,9 +21,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('next/image', () => {
-  const Img = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
-    <img {...props} />
-  );
+  const Img = (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} />;
   return { __esModule: true, default: Img };
 });
 
@@ -48,7 +46,7 @@ describe('CardDetails', () => {
     render(
       <CardDetailContext.Provider value={mockCardDetail as CardItem}>
         <CardDetails />
-      </CardDetailContext.Provider>
+      </CardDetailContext.Provider>,
     );
 
     expect(screen.getByText('Id: 1')).toBeInTheDocument();
@@ -65,7 +63,7 @@ describe('CardDetails', () => {
     render(
       <CardDetailContext.Provider value={undefined}>
         <CardDetails />
-      </CardDetailContext.Provider>
+      </CardDetailContext.Provider>,
     );
 
     expect(screen.queryByText(/Name:/)).not.toBeInTheDocument();
@@ -76,7 +74,7 @@ describe('CardDetails', () => {
     render(
       <CardDetailContext.Provider value={mockCardDetail as CardItem}>
         <CardDetails />
-      </CardDetailContext.Provider>
+      </CardDetailContext.Provider>,
     );
 
     fireEvent.click(screen.getByText('Close'));
@@ -91,7 +89,7 @@ describe('CardDetails', () => {
     render(
       <CardDetailContext.Provider value={cardWithNoLocation as CardItem}>
         <CardDetails />
-      </CardDetailContext.Provider>
+      </CardDetailContext.Provider>,
     );
 
     expect(screen.getByText('Location: Unknown')).toBeInTheDocument();

@@ -19,8 +19,7 @@ export function Card({ card, isActive, onCardClick }: CardProps) {
   const selectCard = useSelectedItemsStore((state) => state.selectItem);
   const unSelectCard = useSelectedItemsStore((state) => state.unselectItem);
   const isChecked = useSelectedItemsStore((state) => state.isSelected(card.id));
-  const setCheckboxState = () =>
-    isChecked ? unSelectCard(card.id) : selectCard(card);
+  const setCheckboxState = () => (isChecked ? unSelectCard(card.id) : selectCard(card));
 
   return (
     <div

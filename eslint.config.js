@@ -11,11 +11,7 @@ import eslintPluginImport from 'eslint-plugin-import';
 export default tseslint.config(
   { ignores: ['dist', '.next/'] },
   {
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.strict,
-      eslintPluginPrettier,
-    ],
+    extends: [js.configs.recommended, ...tseslint.configs.strict, eslintPluginPrettier],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
@@ -26,7 +22,7 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       'react-compiler': reactCompiler,
-      'import': eslintPluginImport,
+      import: eslintPluginImport,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -47,10 +43,7 @@ export default tseslint.config(
           'newlines-between': 'always',
         },
       ],
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'react-compiler/react-compiler': 'error',
       ...react.configs.recommended.rules,
       ...react.configs['jsx-runtime'].rules,
@@ -59,11 +52,11 @@ export default tseslint.config(
       react: {
         version: 'detect',
       },
-      "import/resolver": {
-        "typescript": {
-          "project": "./tsconfig.eslint.json"
-        }
-      }
+      'import/resolver': {
+        typescript: {
+          project: './tsconfig.eslint.json',
+        },
+      },
     },
-  }
+  },
 );

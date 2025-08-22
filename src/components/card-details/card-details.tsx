@@ -40,7 +40,7 @@ export function CardDetails() {
           <p>
             Created:{' '}
             {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(
-              new Date(cardDetail.created)
+              new Date(cardDetail.created),
             )}
           </p>
         </div>

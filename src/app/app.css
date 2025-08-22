@@ -35,10 +35,16 @@ p {
   --text-color: #fff;
 }
 
-.app-page, .header, .footer, .flyout, .content {
+.app-page,
+.header,
+.footer,
+.flyout,
+.content {
   background-color: var(--bg-color);
   color: var(--text-color);
-  transition: background 0.3s, color 0.3s;
+  transition:
+    background 0.3s,
+    color 0.3s;
 }
 
 [data-theme='dark'] a {

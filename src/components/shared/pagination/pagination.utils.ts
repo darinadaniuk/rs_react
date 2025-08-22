@@ -2,7 +2,7 @@ import { PAGES_TO_SHOW, SEPARATOR_KEY } from '@rs-react/constants';
 
 export function getVisiblePages(
   total: number,
-  currentPage: number
+  currentPage: number,
 ): (number | typeof SEPARATOR_KEY)[] {
   const pages: (number | typeof SEPARATOR_KEY)[] = [];
 

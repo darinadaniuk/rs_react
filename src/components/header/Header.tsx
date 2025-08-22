@@ -6,11 +6,7 @@ import { FaUser } from 'react-icons/fa';
 
 import './header.css';
 
-import {
-  Navigation,
-  Toggle,
-  LocaleDropdown,
-} from '@rs-react/components/client';
+import { Navigation, Toggle, LocaleDropdown } from '@rs-react/components/client';
 import { useTheme } from '@rs-react/context';
 
 export function Header() {
