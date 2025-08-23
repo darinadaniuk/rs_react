@@ -7,3 +7,7 @@ export * from './checkbox/checkbox';
 export * from './flyout/flyout';
 export * from './csv-export/csv-export';
 export * from './toggle/toggle';
+export * from './dialog/dialog';
+export * from './upload/upload';
+export * from './radio/radio';
+export * from './text-field/text-field';
