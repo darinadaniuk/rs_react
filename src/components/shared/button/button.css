@@ -20,3 +20,15 @@
 .button.danger:hover {
   background-color: #770606;
 }
+
+.button:disabled,
+.button[disabled] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.button:disabled:hover,
+.button[disabled]:hover {
+  background-color: #03dfb3;
+  cursor:not-allowed;
+}
