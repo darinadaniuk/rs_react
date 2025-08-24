@@ -2,12 +2,12 @@
 
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useContext } from 'react';
 
 import { Button } from '@rs-react/components/shared';
 import { CardDetailContext } from '@rs-react/context';
 
 import './card-details.css';
-import { useContext } from 'react';
 
 export function CardDetails() {
   const cardDetail = useContext(CardDetailContext);

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -69,7 +71,9 @@ export function Dialog({
       <div ref={dialogRef} tabIndex={-1} className="dialog">
         <div className="dialog-header">
           {title ? <h2 className="dialog-title">{title}</h2> : <span />}
-          <button type="button" onClick={onClose} className="dialog-close">×</button>
+          <button type="button" onClick={onClose} className="dialog-close">
+            ×
+          </button>
         </div>
 
         <div className="dialog-body">{children}</div>

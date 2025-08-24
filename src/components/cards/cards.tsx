@@ -13,6 +13,7 @@ import {
   CardSelectionFlyout,
   Button,
   CardDetails,
+  UserForms,
 } from '@rs-react/components';
 import { useCardsQuery, useCardByIdQuery } from '@rs-react/hooks';
 import { useStorage } from '@rs-react/hooks/local-storage.hook';
@@ -102,6 +103,10 @@ export function Cards() {
               <Pagination total={totalPages} currentPage={page} onPageChange={changePage} />
             </div>
           )}
+        </div>
+
+        <div>
+          <UserForms />
         </div>
 
         <div className={cardsContentClass}>

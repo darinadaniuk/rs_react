@@ -64,6 +64,7 @@ vi.mock('@rs-react/components', () => ({
       Next Page ({currentPage}/{total})
     </button>
   ),
+  UserForms: () => <div data-testid="user-forms" />,
 }));
 
 vi.mock('@rs-react/store', () => ({

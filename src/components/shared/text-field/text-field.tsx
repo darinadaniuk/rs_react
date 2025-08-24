@@ -1,14 +1,16 @@
-import React from 'react';
 import classNames from 'classnames';
-
+import React from 'react';
 import './text-field.css';
 
 export interface TextFieldProps {
+  id?: string;
   label?: string | React.ReactNode;
   name?: string;
   type?: 'text' | 'email' | 'password' | 'search' | 'number';
   placeholder?: string;
   autoComplete?: string;
+  listId?: string;
+  datalistOptions?: string[];
 
   value?: string;
   defaultValue?: string;
@@ -27,11 +29,14 @@ export interface TextFieldProps {
 export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
   (
     {
+      id,
       label,
       name,
       type = 'text',
       placeholder,
       autoComplete,
+      listId,
+      datalistOptions,
       value,
       defaultValue,
       onChange,
@@ -43,15 +48,11 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       hint,
       error,
     },
-    ref
+    ref,
   ) => {
-    /** uncontrolled vs rh to fix */
     const controlProps: { value?: string; defaultValue?: string } = {};
-    if (value !== undefined) {
-      controlProps.value = value;
-    } else if (defaultValue !== undefined) {
-      controlProps.defaultValue = defaultValue;
-    }
+    if (value !== undefined) controlProps.value = value;
+    else if (defaultValue !== undefined) controlProps.defaultValue = defaultValue;
 
     const wrapperClass = classNames('text-field', className, {
       disabled,
@@ -60,19 +61,21 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
 
     return (
       <div className={wrapperClass}>
-        { label && (
-          <label className="text-field-label">
-            { label }
+        {label && (
+          <label className="text-field-label" {...(id ? { htmlFor: id } : {})}>
+            {label}
           </label>
         )}
 
         <input
+          id={id}
           ref={ref}
           name={name}
           type={type}
           className="text-field-input"
           placeholder={placeholder}
           autoComplete={autoComplete}
+          list={listId}
           required={required}
           disabled={disabled}
           readOnly={readOnly}
@@ -81,11 +84,17 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           onChange={(e) => onChange?.(e.target.value)}
         />
 
-        { error ? <p className="text-field-error">{error}</p> : null }
-        { !error && hint && (
-          <p className="text-field-hint">{hint}</p>
+        {datalistOptions && listId && (
+          <datalist id={listId}>
+            {datalistOptions.map((opt) => (
+              <option key={opt} value={opt} />
+            ))}
+          </datalist>
         )}
+
+        {error ? <p className="text-field-error">{error}</p> : null}
+        {!error && hint ? <p className="text-field-hint">{hint}</p> : null}
       </div>
     );
-  }
+  },
 );

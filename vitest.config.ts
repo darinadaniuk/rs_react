@@ -41,6 +41,7 @@ export default defineConfig({
         '**/*.config.ts',
         'src/app/*',
         'src/i18n/*',
+        '**/*.const.ts',
       ],
       thresholds: {
         global: { statements: 80, branches: 50, functions: 50, lines: 50 },

@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
 import classNames from 'classnames';
+import React, { useRef, useState } from 'react';
 
 import { Button } from '@rs-react/components';
 
@@ -88,7 +88,7 @@ export const Upload: React.FC<UploadProps> = ({
   }
 
   return (
-    <div className={classNames("upload", className, { disabled })}>
+    <div className={classNames('upload', className, { disabled })}>
       {label && (
         <label className="upload-label" htmlFor={id}>
           {label}

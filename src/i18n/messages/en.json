@@ -17,6 +17,7 @@
   "header": {
     "title": "RSS React course",
     "userIconAria": "User",
+    "settingsIconAria": "Settings",
     "name": "Darya"
   },
   "nav": {

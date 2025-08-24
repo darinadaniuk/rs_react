@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { FaUser } from 'react-icons/fa';
+import { FaCog, FaUser } from 'react-icons/fa';
 
 import './header.css';
 
@@ -30,6 +30,7 @@ export function Header() {
         <p data-testid="header-user" className="user-name">
           {t('name')}
         </p>
+        <FaCog aria-label={t('settingsIconAria')} title={t('settingsIconAria')} />
         <Toggle
           checked={theme === 'dark'}
           onChange={(checked) => setTheme(checked ? 'dark' : 'light')}

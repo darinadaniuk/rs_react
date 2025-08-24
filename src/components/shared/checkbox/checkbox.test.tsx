@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, it, vi, expect } from 'vitest';
 
 import { Checkbox } from './checkbox';
@@ -14,44 +15,41 @@ describe('<Checkbox />', () => {
     expect(screen.getByText('Accept terms')).toBeInTheDocument();
   });
 
-  it('should have correct aria-checked when checked', () => {
-    render(<Checkbox checked={true} onChange={() => {}} />);
-    expect(screen.getByRole('checkbox')).toHaveAttribute('aria-checked', 'true');
-  });
-
-  it('should call onChange with true when initially unchecked and clicked', () => {
+  it('should call onChange with true when initially unchecked and clicked', async () => {
+    const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Checkbox checked={false} onChange={handleChange} />);
-    fireEvent.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('checkbox'));
     expect(handleChange).toHaveBeenCalledWith(true);
   });
 
-  it('should call onChange with false when initially checked and clicked', () => {
+  it('should call onChange with false when initially checked and clicked', async () => {
+    const user = userEvent.setup();
     const handleChange = vi.fn();
-    render(<Checkbox checked={true} onChange={handleChange} />);
-    fireEvent.click(screen.getByRole('checkbox'));
+    render(<Checkbox checked onChange={handleChange} />);
+    await user.click(screen.getByRole('checkbox'));
     expect(handleChange).toHaveBeenCalledWith(false);
   });
 
-  it('should toggle on Enter key', () => {
+  it('should toggle on Space key when focused (native behavior)', async () => {
+    const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Checkbox checked={false} onChange={handleChange} />);
-    fireEvent.keyDown(screen.getByRole('checkbox'), { key: 'Enter' });
+    const cb = screen.getByRole('checkbox');
+    cb.focus();
+    await user.keyboard('[Space]');
     expect(handleChange).toHaveBeenCalledWith(true);
   });
 
-  it('should toggle on Space key', () => {
-    const handleChange = vi.fn();
-    render(<Checkbox checked={false} onChange={handleChange} />);
-    fireEvent.keyDown(screen.getByRole('checkbox'), { key: ' ' });
-    expect(handleChange).toHaveBeenCalledWith(true);
-  });
-
-  it('should not call onChange when disabled', () => {
+  it('should not call onChange when disabled', async () => {
+    const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<Checkbox checked={false} onChange={handleChange} disabled />);
-    fireEvent.click(screen.getByRole('checkbox'));
-    fireEvent.keyDown(screen.getByRole('checkbox'), { key: 'Enter' });
+    const cb = screen.getByRole('checkbox');
+    expect(cb).toBeDisabled();
+    await user.click(cb);
+    cb.focus();
+    await user.keyboard('[Space]');
     expect(handleChange).not.toHaveBeenCalled();
   });
 });

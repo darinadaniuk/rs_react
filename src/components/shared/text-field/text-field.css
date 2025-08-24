@@ -1,4 +1,5 @@
 .text-field {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -43,6 +44,8 @@
 }
 
 .text-field-error {
+  position: absolute;
+  top: 65px;
   color: #e5484d;
   font-size: 12px;
   line-height: 1.2;

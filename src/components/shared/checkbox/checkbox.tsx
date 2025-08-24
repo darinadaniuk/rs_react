@@ -23,7 +23,6 @@ export const Checkbox: React.FC<CustomCheckboxProps> = ({
   required = false,
   className,
 }) => {
-
   const wrapperClass = classNames('custom-checkbox', className, {
     checked,
     disabled,

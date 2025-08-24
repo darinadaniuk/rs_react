@@ -12,7 +12,7 @@ interface CustomRadioProps {
   value: string;
   required?: boolean;
   className?: string;
-  
+
   onChange: (value: string) => void;
 }
 
@@ -46,7 +46,7 @@ export const Radio: React.FC<CustomRadioProps> = ({
         value={value}
       />
       <span className="custom-radio-box" />
-      { label && <span className="custom-radio-label">{ label }</span>}
+      {label && <span className="custom-radio-label">{label}</span>}
     </label>
   );
 };
