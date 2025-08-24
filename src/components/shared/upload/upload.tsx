@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useTranslations } from 'next-intl';
 import React, { useRef, useState } from 'react';
 
 import { Button } from '@rs-react/components';
@@ -55,6 +56,8 @@ export const Upload: React.FC<UploadProps> = ({
   onError,
   onValidFile,
 }) => {
+  const t = useTranslations('upload');
+
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [localError, setLocalError] = useState<string | undefined>();
   const [selectedName, setSelectedName] = useState<string>('');
@@ -74,11 +77,11 @@ export const Upload: React.FC<UploadProps> = ({
     setSelectedName(file.name);
 
     if (!allowedMime.includes(file.type)) {
-      setError('Only PNG or JPEG allowed');
+      setError(t('onlyPngJpeg'));
       return;
     }
     if (file.size > maxSize) {
-      setError(`File too large (max ${Math.round(maxSize / (1024 * 1024))}MB)`);
+      setError(t('tooLarge', { maxMB: Math.round(maxSize / (1024 * 1024)) }));
       return;
     }
 
@@ -113,7 +116,7 @@ export const Upload: React.FC<UploadProps> = ({
             e.preventDefault();
             inputRef.current?.click();
           }}
-          text="Browse…"
+          text={t('browse')}
           disabled={disabled}
         />
         {selectedName && <span className="upload-file-name">{selectedName}</span>}

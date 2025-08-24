@@ -1,17 +1,13 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 import React, { useMemo, useEffect } from 'react';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Checkbox, Upload, Radio, TextField } from '@rs-react/components';
-import {
-  EMAIL_REGEX,
-  NAME_REGEX,
-  passwordRequirements,
-  USER_VALIDATION_MSG,
-} from '@rs-react/constants';
+import { EMAIL_REGEX, NAME_REGEX } from '@rs-react/constants';
 import { useCountryStore, usePhotoStore } from '@rs-react/store';
 
 import { strongPw, GENDERS } from './user-form-rhf.const';
@@ -25,10 +21,11 @@ export function UserFormRHF({
   onValidityChangeAction,
   onSubmitRefAction,
 }: RHFRegistrationFormProps) {
+  const t = useTranslations('userForm');
+
   const countries = useCountryStore((s) => s.countries);
   const photoBase64 = usePhotoStore((s) => s.base64);
   const saveBase64 = usePhotoStore((s) => s.saveBase64);
-  const clearPhoto = usePhotoStore((s) => s.clear);
 
   const Schema = useMemo(
     () =>
@@ -36,42 +33,35 @@ export function UserFormRHF({
         .object({
           name: z
             .string()
-            .min(1, USER_VALIDATION_MSG.nameInvalid)
-            .regex(NAME_REGEX, USER_VALIDATION_MSG.nameInvalid),
-
+            .min(1, t('errors.nameInvalid'))
+            .regex(NAME_REGEX, t('errors.nameInvalid')),
           age: z.coerce
             .number()
-            .refine(Number.isFinite, { message: USER_VALIDATION_MSG.ageRequired })
-            .min(0, USER_VALIDATION_MSG.ageNegative),
-
+            .refine(Number.isFinite, { message: t('errors.ageRequired') })
+            .min(0, t('errors.ageNegative')),
           email: z
             .string()
-            .min(1, USER_VALIDATION_MSG.emailInvalid)
-            .regex(EMAIL_REGEX, USER_VALIDATION_MSG.emailInvalid),
-
+            .min(1, t('errors.emailInvalid'))
+            .regex(EMAIL_REGEX, t('errors.emailInvalid')),
           password: z
             .string()
-            .min(1, USER_VALIDATION_MSG.passwordRequired)
-            .refine(strongPw, USER_VALIDATION_MSG.passwordWeak),
-
+            .min(1, t('errors.passwordRequired'))
+            .refine(strongPw, t('errors.passwordWeak')),
           confirm: z.string(),
-
           gender: z.string().refine((v) => (GENDERS as readonly string[]).includes(v), {
-            message: USER_VALIDATION_MSG.genderRequired,
+            message: t('errors.genderRequired'),
           }),
-
           country: z
             .string()
             .optional()
-            .refine((v) => !v || countries.includes(v), USER_VALIDATION_MSG.countryInvalid),
-
-          tc: z.boolean().refine(Boolean, { message: USER_VALIDATION_MSG.tcRequired }),
+            .refine((v) => !v || countries.includes(v), t('errors.countryInvalid')),
+          tc: z.boolean().refine(Boolean, { message: t('errors.tcRequired') }),
         })
         .refine((data) => data.password === data.confirm, {
           path: ['confirm'],
-          message: USER_VALIDATION_MSG.confirmMismatch,
+          message: t('errors.confirmMismatch'),
         }),
-    [countries],
+    [countries, t],
   );
 
   type FormSchema = typeof Schema;
@@ -81,14 +71,12 @@ export function UserFormRHF({
   const {
     control,
     handleSubmit,
-    reset,
-    watch,
     setError,
     clearErrors,
     formState: { errors, isValid },
   } = useForm<FormInputs, unknown, FormValues>({
     resolver: zodResolver(Schema),
-    mode: 'onChange', // live validation
+    mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
       name: '',
@@ -127,17 +115,6 @@ export function UserFormRHF({
     onSubmitRefAction?.(submitFn);
   }, [handleSubmit, onSubmitRefAction]);
 
-  const pw = watch('password') ?? '';
-  const reqs = passwordRequirements(pw);
-
-  const onReset = () => {
-    reset();
-    clearPhoto();
-    clearErrors();
-  };
-
-  const uploadHasError = Boolean(errors.root?.file?.message);
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form" noValidate>
       <div className="form-row">
@@ -149,8 +126,8 @@ export function UserFormRHF({
               {...field}
               ref={field.ref}
               name="name"
-              label="Name"
-              placeholder="John Doe"
+              label={t('fields.name.label')}
+              placeholder={t('fields.name.placeholder')}
               value={(field.value as string) ?? ''}
               onChange={field.onChange}
               error={fieldState.error?.message}
@@ -169,8 +146,8 @@ export function UserFormRHF({
               ref={field.ref}
               name="age"
               type="number"
-              label="Age"
-              placeholder="30"
+              label={t('fields.age.label')}
+              placeholder={t('fields.age.placeholder')}
               value={field.value === undefined || field.value === null ? '' : String(field.value)}
               onChange={(v) => field.onChange(v === '' ? undefined : v)}
               error={fieldState.error?.message}
@@ -189,8 +166,8 @@ export function UserFormRHF({
               ref={field.ref}
               name="email"
               type="email"
-              label="Email"
-              placeholder="your_email@example.com"
+              label={t('fields.email.label')}
+              placeholder={t('fields.email.placeholder')}
               value={(field.value as string) ?? ''}
               onChange={field.onChange}
               error={fieldState.error?.message}
@@ -209,7 +186,7 @@ export function UserFormRHF({
               ref={field.ref}
               name="password"
               type="password"
-              label="Password"
+              label={t('fields.password.label')}
               value={(field.value as string) ?? ''}
               onChange={field.onChange}
               error={fieldState.error?.message}
@@ -228,7 +205,8 @@ export function UserFormRHF({
               ref={field.ref}
               name="confirm"
               type="password"
-              label="Confirm Password"
+              label={t('fields.confirm.label')}
+              placeholder={t('fields.confirm.placeholder')}
               value={(field.value as string) ?? ''}
               onChange={field.onChange}
               error={fieldState.error?.message}
@@ -238,7 +216,7 @@ export function UserFormRHF({
       </div>
 
       <div className="form-row">
-        <span>Gender</span>
+        <span>{t('fields.gender.label')}</span>
         <Controller
           name="gender"
           control={control}
@@ -248,29 +226,22 @@ export function UserFormRHF({
                 <Radio
                   name={field.name}
                   value="female"
-                  label="Female"
+                  label={t('fields.gender.options.female')}
                   checked={field.value === 'female'}
                   onChange={field.onChange}
                 />
                 <Radio
                   name={field.name}
                   value="male"
-                  label="Male"
+                  label={t('fields.gender.options.male')}
                   checked={field.value === 'male'}
                   onChange={field.onChange}
                 />
                 <Radio
                   name={field.name}
                   value="other"
-                  label="Other"
+                  label={t('fields.gender.options.other')}
                   checked={field.value === 'other'}
-                  onChange={field.onChange}
-                />
-                <Radio
-                  name={field.name}
-                  value="prefer_not"
-                  label="Prefer not to say"
-                  checked={field.value === 'prefer_not'}
                   onChange={field.onChange}
                 />
               </div>
@@ -290,8 +261,8 @@ export function UserFormRHF({
               ref={field.ref}
               id="country"
               name="country"
-              label="Country"
-              placeholder="Start typing…"
+              label={t('fields.country.label')}
+              placeholder={t('fields.country.placeholder')}
               listId="countries-list"
               datalistOptions={countries}
               value={(field.value as string) ?? ''}
@@ -313,17 +284,17 @@ export function UserFormRHF({
           name="picture"
           hint={
             photoBase64
-              ? `Saved to Zustand (${Math.round(photoBase64.length / 1024)} KB base64)`
-              : 'Picture PNG/JPEG, max 2MB'
+              ? t('fields.picture.hintSaved', { sizeKB: Math.round(photoBase64.length / 1024) })
+              : t('fields.picture.hint')
           }
-          error={errors.root?.file?.message as string | undefined}
+          error={errors.root?.message as string | undefined}
           onError={(msg) => {
-            if (msg) setError('root.file' as any, { type: 'manual', message: msg });
-            else clearErrors('root.file' as any);
+            if (msg) setError('root', { type: 'manual', message: msg });
+            else clearErrors('root');
           }}
           onValidFile={({ base64 }) => {
             saveBase64(base64);
-            clearErrors('root.file' as any);
+            clearErrors('root');
           }}
         />
       </div>
@@ -336,7 +307,7 @@ export function UserFormRHF({
             <>
               <Checkbox
                 name="tc"
-                label="I accept the Terms and Conditions"
+                label={t('fields.tc.label')}
                 checked={!!field.value}
                 onChange={field.onChange}
                 required
@@ -346,8 +317,6 @@ export function UserFormRHF({
           )}
         />
       </div>
-
-      {/* <Button onClick={onReset} text="Reset" />*/}
     </form>
   );
 }

@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom/vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -6,18 +7,31 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Upload } from './upload';
 
 vi.mock('@rs-react/components', () => ({
-  Button: (p: { onClick?: (e: any) => void; text: string; disabled?: boolean }) => (
+  Button: (p: {
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
+    text: string;
+    disabled?: boolean;
+  }) => (
     <button type="button" disabled={p.disabled} onClick={p.onClick}>
       {p.text}
     </button>
   ),
 }));
 
+vi.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    if (key === 'browse') return 'Browse…';
+    if (key === 'onlyPngJpeg') return 'Only PNG or JPEG files are allowed';
+    if (key === 'tooLarge') return 'File too large';
+    return key;
+  },
+}));
+
 class FileReaderMock {
   result: string | ArrayBuffer | null = null;
-  onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
-  onerror: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
-  readAsDataURL(_: Blob): void {
+  onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => void) | null = null;
+  readAsDataURL(file: Blob): void {
+    void file;
     this.result = 'data:image/png;base64,QUJD';
     const ev = new ProgressEvent('load') as unknown as ProgressEvent<FileReader>;
     this.onload?.call(this as unknown as FileReader, ev);
@@ -26,11 +40,13 @@ class FileReaderMock {
 const RealFileReader = globalThis.FileReader;
 
 beforeEach(() => {
-  (globalThis as any).FileReader = FileReaderMock as unknown as { new (): FileReader };
+  (globalThis as unknown as { FileReader: new () => FileReader }).FileReader =
+    FileReaderMock as unknown as new () => FileReader;
 });
 
 afterEach(() => {
-  (globalThis as any).FileReader = RealFileReader;
+  (globalThis as unknown as { FileReader: new () => FileReader }).FileReader =
+    RealFileReader as unknown as new () => FileReader;
   vi.restoreAllMocks();
 });
 
@@ -50,13 +66,13 @@ describe('Upload', () => {
   it('should set default accept to PNG and JPEG', () => {
     const { container } = render(<Upload id="u" name="n" />);
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
-    expect(input).toHaveAttribute('accept', 'image/png,image/jpeg');
+    expect(input.accept).toBe('image/png,image/jpeg');
   });
 
   it('should set custom accept when provided', () => {
     const { container } = render(<Upload id="u" name="n" accept={['application/pdf']} />);
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
-    expect(input).toHaveAttribute('accept', 'application/pdf');
+    expect(input.accept).toBe('application/pdf');
   });
 
   it('should set required and disabled attributes', () => {
@@ -103,9 +119,8 @@ describe('Upload', () => {
     const input = container.querySelector('input[type="file"]') as HTMLInputElement;
     const file = makeFile('abc', 'big.png', 'image/png');
     await user.upload(input, file);
-    expect(onError).toHaveBeenCalledTimes(1);
-    expect(onError.mock.calls[0][0]).toMatch(/File too large/);
-    expect(screen.getByText(/File too large/)).toBeInTheDocument();
+    expect(onError).toHaveBeenCalledWith('File too large');
+    expect(screen.getByText(/File too large/i)).toBeInTheDocument();
   });
 
   it('should prioritize error display over hint', () => {

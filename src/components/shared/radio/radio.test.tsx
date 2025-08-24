@@ -19,7 +19,8 @@ describe('Radio', () => {
 
   it('should apply checked class when checked=true', () => {
     const { container } = render(<Radio checked value="opt1" onChange={vi.fn()} />);
-    const wrapper = container.querySelector('.custom-radio')!;
+    const wrapper = container.querySelector('.custom-radio');
+    if (!wrapper) throw new Error('Missing .custom-radio');
     expect(wrapper.classList.contains('checked')).toBe(true);
   });
 
@@ -27,7 +28,8 @@ describe('Radio', () => {
     const { container } = render(
       <Radio checked={false} disabled value="opt1" onChange={vi.fn()} />,
     );
-    const wrapper = container.querySelector('.custom-radio')!;
+    const wrapper = container.querySelector('.custom-radio');
+    if (!wrapper) throw new Error('Missing .custom-radio');
     expect(wrapper.classList.contains('disabled')).toBe(true);
   });
 
@@ -67,7 +69,8 @@ describe('Radio', () => {
     const { container } = render(
       <Radio checked={false} value="opt1" onChange={vi.fn()} className="extra-class" />,
     );
-    const wrapper = container.querySelector('.custom-radio')!;
+    const wrapper = container.querySelector('.custom-radio');
+    if (!wrapper) throw new Error('Missing .custom-radio');
     expect(wrapper.classList.contains('extra-class')).toBe(true);
   });
 });

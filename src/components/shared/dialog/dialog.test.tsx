@@ -13,6 +13,21 @@ vi.mock('@rs-react/components', () => ({
   ),
 }));
 
+vi.mock('next-intl', () => ({
+  useTranslations: () => {
+    const dict: Record<string, string> = {
+      close: 'Close',
+      submit: 'Submit',
+      'dialog.close': 'Close',
+      'dialog.submit': 'Submit',
+    };
+
+    const t = (key: string) => dict[key] ?? key;
+    t.rich = (key: string) => dict[key] ?? key;
+    return t;
+  },
+}));
+
 function setup(props?: Partial<DialogProps>) {
   const onClose = vi.fn();
   const onSubmit = vi.fn();
@@ -55,7 +70,10 @@ describe('Dialog', () => {
 
   it('should mount into #dialog-root via portal', () => {
     setup();
-    const host = document.getElementById('dialog-root')!;
+    const host = document.getElementById('dialog-root');
+    if (!host) {
+      throw new Error('Missing #dialog-root');
+    }
     expect(host.querySelector('.dialog-overlay')).not.toBeNull();
   });
 

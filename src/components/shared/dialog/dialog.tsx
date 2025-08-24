@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -24,6 +25,8 @@ export function Dialog({
   onSubmit,
   isSubmitDisabled = false,
 }: DialogProps) {
+  const t = useTranslations('dialog');
+
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const prevFocused = useRef<HTMLElement | null>(null);
@@ -79,8 +82,8 @@ export function Dialog({
         <div className="dialog-body">{children}</div>
 
         <div className="dialog-actions">
-          <Button text="Close" onClick={onClose} />
-          <Button text="Submit" onClick={handleSubmitClick} disabled={isSubmitDisabled} />
+          <Button text={t('close')} onClick={onClose} />
+          <Button text={t('submit')} onClick={handleSubmitClick} disabled={isSubmitDisabled} />
         </div>
       </div>
     </div>

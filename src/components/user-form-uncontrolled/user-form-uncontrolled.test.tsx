@@ -1,6 +1,57 @@
+import '@testing-library/jest-dom/vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React, { forwardRef } from 'react';
 import { describe, it, expect, vi } from 'vitest';
+
+import { UserFormUncontrolled } from './user-form-uncontrolled';
+
+vi.mock('next-intl', () => ({
+  __esModule: true,
+  useTranslations: (ns?: string) => (key: string, values?: Record<string, unknown>) => {
+    const map: Record<string, string> = {
+      'userForm.aria.formLabel': 'Registration Form',
+      'userForm.errors.nameInvalid': 'Name is invalid',
+      'userForm.errors.ageRequired': 'Age is required',
+      'userForm.errors.ageNegative': 'Age cannot be negative',
+      'userForm.errors.emailInvalid': 'Email is invalid',
+      'userForm.errors.passwordRequired': 'Password is required',
+      'userForm.errors.passwordWeak': 'Password is too weak',
+      'userForm.errors.confirmMismatch': 'Passwords do not match',
+      'userForm.errors.genderRequired': 'Gender is required',
+      'userForm.errors.tcRequired': 'You must accept terms',
+      'userForm.errors.countryInvalid': 'Invalid country',
+      'userForm.errors.file': `File error: ${values?.msg ?? ''}`,
+      'userForm.fields.name.label': 'Name',
+      'userForm.fields.name.placeholder': 'Enter name',
+      'userForm.fields.age.label': 'Age',
+      'userForm.fields.age.placeholder': 'Enter age',
+      'userForm.fields.email.label': 'Email',
+      'userForm.fields.email.placeholder': 'Enter email',
+      'userForm.fields.password.label': 'Password',
+      'userForm.fields.password.placeholder': 'Enter password',
+      'userForm.fields.confirm.label': 'Confirm',
+      'userForm.fields.confirm.placeholder': 'Confirm password',
+      'userForm.fields.gender.label': 'Gender',
+      'userForm.fields.gender.options.female': 'Female',
+      'userForm.fields.gender.options.male': 'Male',
+      'userForm.fields.gender.options.other': 'Other',
+      'userForm.fields.country.label': 'Country',
+      'userForm.fields.country.placeholder': 'Select country',
+      'userForm.fields.picture.hint': 'Upload a picture',
+      'userForm.fields.tc.label': 'I accept terms',
+    };
+    const k = ns ? `${ns}.${key}` : key;
+    return map[k] ?? k;
+  },
+}));
+
+vi.mock('@rs-react/store', () => ({
+  __esModule: true,
+  useCountryStore: (sel: (s: { countries: string[] }) => unknown) =>
+    sel({ countries: ['Canada', 'USA'] }),
+  usePhotoStore: (sel: (s: { saveBase64: (b: string) => void; clear: () => void }) => unknown) =>
+    sel({ saveBase64: vi.fn(), clear: vi.fn() }),
+}));
 
 vi.mock('@rs-react/constants', () => ({
   __esModule: true,
@@ -12,54 +63,62 @@ vi.mock('@rs-react/constants', () => ({
     lower: /[a-z]/.test(pwd),
     special: /[^A-Za-z0-9]/.test(pwd),
   }),
-  USER_VALIDATION_MSG: {
-    nameInvalid: 'Name is invalid',
-    ageRequired: 'Age is required',
-    ageNegative: 'Age cannot be negative',
-    emailInvalid: 'Email is invalid',
-    passwordRequired: 'Password is required',
-    passwordWeak: 'Password is too weak',
-    confirmMismatch: 'Passwords do not match',
-    genderRequired: 'Gender is required',
-    tcRequired: 'You must accept terms',
-    countryInvalid: 'Invalid country',
-  },
 }));
 
-vi.mock('@rs-react/store', () => ({
-  __esModule: true,
-  useCountryStore: (sel: any) => sel({ countries: ['Canada', 'USA'] }),
-  usePhotoStore: (sel: any) => sel({ saveBase64: vi.fn(), clear: vi.fn() }),
-}));
+type TextFieldProps = {
+  name: string;
+  label?: string;
+  type?: string;
+  placeholder?: string;
+  listId?: string;
+  datalistOptions?: string[];
+  error?: string;
+  id?: string;
+};
+type RadioProps = {
+  name: string;
+  value: string;
+  label: string;
+  checked?: boolean;
+  onChange?: (v: string) => void;
+};
+type CheckboxProps = {
+  name: string;
+  label: string;
+  checked?: boolean;
+  onChange?: (v: boolean) => void;
+  required?: boolean;
+};
 
 vi.mock('@rs-react/components', () => {
-  const TextField = forwardRef<HTMLInputElement, any>(
-    ({ name, label, type = 'text', placeholder, listId, datalistOptions = [], error }, ref) => (
+  const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
+    ({ name, label, type = 'text', placeholder, listId, datalistOptions = [], error, id }, ref) => (
       <div>
-        {label && <label htmlFor={name}>{label}</label>}
+        {label ? <label htmlFor={id ?? name}>{label}</label> : null}
         <input
           ref={ref}
-          id={name}
+          id={id ?? name}
           name={name}
           type={type}
-          aria-label={label || name}
+          aria-label={label ?? name}
           placeholder={placeholder}
           list={listId}
           data-testid={`tf-${name}`}
         />
-        {listId && (
+        {listId ? (
           <datalist id={listId}>
-            {datalistOptions.map((o: string) => (
+            {datalistOptions.map((o) => (
               <option key={o} value={o} />
             ))}
           </datalist>
-        )}
-        {error && <span data-testid={`err-${name}`}>{error}</span>}
+        ) : null}
+        {error ? <span role="alert">{error}</span> : null}
       </div>
     ),
   );
+  TextField.displayName = 'TextField';
 
-  const Radio = ({ name, value, label, checked, onChange }: any) => (
+  const Radio: React.FC<RadioProps> = ({ name, value, label, checked, onChange }) => (
     <label>
       <input
         type="radio"
@@ -73,38 +132,58 @@ vi.mock('@rs-react/components', () => {
     </label>
   );
 
-  const Checkbox = ({ name, label, checked, onChange }: any) => (
+  const Checkbox: React.FC<CheckboxProps> = ({ name, label, checked, onChange, required }) => (
     <label>
       <input
         type="checkbox"
         name={name}
         checked={!!checked}
-        onChange={(e) => onChange?.(e.target.checked)}
+        onChange={(e) => onChange?.(e.currentTarget.checked)}
         data-testid={`chk-${name}`}
+        aria-required={required}
       />
       {label}
     </label>
   );
 
-  const Upload = (_: any) => <div data-testid="upload">upload</div>;
+  const Upload: React.FC = () => <div data-testid="upload">upload</div>;
 
   return { __esModule: true, TextField, Radio, Checkbox, Upload };
 });
 
-import { UserFormUncontrolled } from './user-form-uncontrolled';
-
-describe('UserFormUncontrolled (simple)', () => {
-  it('should show basic validation errors on empty submit', async () => {
-    render(<UserFormUncontrolled />);
-
-    const form = document.querySelector('form') as HTMLFormElement;
+describe('UserFormUncontrolled', () => {
+  it('should show validation errors on empty submit', () => {
+    const onValidity = vi.fn();
+    const onSubmit = vi.fn();
+    render(<UserFormUncontrolled onValidityChange={onValidity} onSubmit={onSubmit} />);
+    const form = screen.getByRole('form', { name: 'Registration Form' });
     fireEvent.submit(form);
+    expect(screen.getByText('Name is invalid')).toBeInTheDocument();
+    expect(screen.getByText('Age is required')).toBeInTheDocument();
+    expect(screen.getByText('Email is invalid')).toBeInTheDocument();
+    expect(screen.getByText('Password is required')).toBeInTheDocument();
+    expect(screen.getByText('Gender is required')).toBeInTheDocument();
+    expect(screen.getByText('You must accept terms')).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
 
-    expect(await screen.findByTestId('err-name')).toHaveTextContent('Name is invalid');
-    expect(await screen.findByTestId('err-age')).toHaveTextContent('Age is required');
-    expect(await screen.findByTestId('err-email')).toHaveTextContent('Email is invalid');
-    expect(await screen.findByTestId('err-password')).toHaveTextContent('Password is required');
-    expect(await screen.findByText('Gender is required')).toBeInTheDocument();
-    expect(await screen.findByText('You must accept terms')).toBeInTheDocument();
+  it('should submit valid data', () => {
+    const onSubmit = vi.fn();
+    render(<UserFormUncontrolled onSubmit={onSubmit} />);
+    fireEvent.input(screen.getByTestId('tf-name'), { target: { value: 'John Doe' } });
+    fireEvent.input(screen.getByTestId('tf-age'), { target: { value: '30' } });
+    fireEvent.input(screen.getByTestId('tf-email'), { target: { value: 'john@example.com' } });
+    fireEvent.input(screen.getByTestId('tf-password'), { target: { value: 'Aa1!' } });
+    fireEvent.input(screen.getByTestId('tf-confirm'), { target: { value: 'Aa1!' } });
+    fireEvent.click(screen.getByTestId('radio-male'));
+    fireEvent.input(screen.getByTestId('tf-country'), { target: { value: 'Canada' } });
+    fireEvent.click(screen.getByTestId('chk-tc'));
+    const form = screen.getByRole('form', { name: 'Registration Form' });
+    fireEvent.submit(form);
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    const payload = onSubmit.mock.calls[0][0] as Record<string, FormDataEntryValue>;
+    expect(payload.name).toBe('John Doe');
+    expect(payload.email).toBe('john@example.com');
+    expect(payload.gender).toBe('male');
   });
 });

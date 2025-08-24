@@ -1,15 +1,13 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
 import React, { useRef, useState, useImperativeHandle } from 'react';
 
 import { useCountryStore, usePhotoStore } from '@rs-react/store';
 import { Checkbox, Upload, Radio, TextField } from '@rs-react/components';
 
 import './user-form-uncontrolled.css';
-import {
-  EMAIL_REGEX,
-  NAME_REGEX,
-  passwordRequirements,
-  USER_VALIDATION_MSG,
-} from '@rs-react/constants';
+import { EMAIL_REGEX, NAME_REGEX, passwordRequirements } from '@rs-react/constants';
 
 export type UncontrolledRegistrationFormHandle = {
   validate: () => boolean;
@@ -28,6 +26,8 @@ export const UserFormUncontrolled = React.forwardRef<
   { onValidityChange, onSubmit }: UncontrolledRegistrationFormProps,
   ref,
 ) {
+  const t = useTranslations('userForm');
+
   const countries = useCountryStore((store) => store.countries);
   const savePhoto = usePhotoStore((store) => store.saveBase64);
   const clearPhoto = usePhotoStore((store) => store.clear);
@@ -55,40 +55,40 @@ export const UserFormUncontrolled = React.forwardRef<
     const country = countryRef.current?.value.trim() ?? '';
 
     if (!NAME_REGEX.test(name)) {
-      nextErrors.name = USER_VALIDATION_MSG.nameInvalid;
+      nextErrors.name = t('errors.nameInvalid');
     }
 
     if (!age) {
-      nextErrors.age = USER_VALIDATION_MSG.ageRequired;
+      nextErrors.age = t('errors.ageRequired');
     } else if (Number(age) < 0) {
-      nextErrors.age = USER_VALIDATION_MSG.ageNegative;
+      nextErrors.age = t('errors.ageNegative');
     }
 
     if (!EMAIL_REGEX.test(email)) {
-      nextErrors.email = USER_VALIDATION_MSG.emailInvalid;
+      nextErrors.email = t('errors.emailInvalid');
     }
 
     const req = passwordRequirements(pwd);
     if (!pwd) {
-      nextErrors.password = USER_VALIDATION_MSG.passwordRequired;
+      nextErrors.password = t('errors.passwordRequired');
     } else if (!(req.number && req.upper && req.lower && req.special)) {
-      nextErrors.password = USER_VALIDATION_MSG.passwordWeak;
+      nextErrors.password = t('errors.passwordWeak');
     }
 
     if (pwd !== confirm) {
-      nextErrors.confirm = USER_VALIDATION_MSG.confirmMismatch;
+      nextErrors.confirm = t('errors.confirmMismatch');
     }
 
     if (!gender) {
-      nextErrors.gender = USER_VALIDATION_MSG.genderRequired;
+      nextErrors.gender = t('errors.genderRequired');
     }
 
     if (!tcChecked) {
-      nextErrors.tc = USER_VALIDATION_MSG.tcRequired;
+      nextErrors.tc = t('errors.tcRequired');
     }
 
     if (country && !countries.includes(country)) {
-      nextErrors.country = USER_VALIDATION_MSG.countryInvalid;
+      nextErrors.country = t('errors.countryInvalid');
     }
 
     return nextErrors;
@@ -128,19 +128,27 @@ export const UserFormUncontrolled = React.forwardRef<
   useImperativeHandle(ref, () => ({
     validate,
     submit: () => {
-      validate();
-      !errors && formRef.current?.requestSubmit();
+      if (validate()) {
+        formRef.current?.requestSubmit();
+      }
     },
   }));
 
   return (
-    <form id="uncontrolled-form" ref={formRef} onSubmit={onSubmitInternal} onInput={onAnyInput}>
+    <form
+      id="uncontrolled-form"
+      ref={formRef}
+      onSubmit={onSubmitInternal}
+      onReset={onReset}
+      onInput={onAnyInput}
+      aria-label={t('aria.formLabel')}
+    >
       <div className="form-row">
         <TextField
           ref={nameRef}
           name="name"
-          label="Name"
-          placeholder="John Doe"
+          label={t('fields.name.label')}
+          placeholder={t('fields.name.placeholder')}
           error={errors.name}
         />
       </div>
@@ -150,8 +158,8 @@ export const UserFormUncontrolled = React.forwardRef<
           ref={ageRef}
           name="age"
           type="number"
-          label="Age"
-          placeholder="30"
+          label={t('fields.age.label')}
+          placeholder={t('fields.age.placeholder')}
           error={errors.age}
         />
       </div>
@@ -161,8 +169,8 @@ export const UserFormUncontrolled = React.forwardRef<
           ref={emailRef}
           name="email"
           type="email"
-          label="Email"
-          placeholder="your_email@example.com"
+          label={t('fields.email.label')}
+          placeholder={t('fields.email.placeholder')}
           error={errors.email}
         />
       </div>
@@ -172,7 +180,8 @@ export const UserFormUncontrolled = React.forwardRef<
           ref={pwdRef}
           name="password"
           type="password"
-          label="Password"
+          label={t('fields.password.label')}
+          placeholder={t('fields.password.placeholder')}
           error={errors.password}
         />
       </div>
@@ -182,32 +191,33 @@ export const UserFormUncontrolled = React.forwardRef<
           ref={confirmRef}
           name="confirm"
           type="password"
-          label="Confirm Password"
+          label={t('fields.confirm.label')}
+          placeholder={t('fields.confirm.placeholder')}
           error={errors.confirm}
         />
       </div>
 
       <div className="form-row radio">
-        <p className="radio-label">Gender</p>
+        <p className="radio-label">{t('fields.gender.label')}</p>
         <div className="radio-group">
           <Radio
             name="gender"
             value="female"
-            label="Female"
+            label={t('fields.gender.options.female')}
             checked={gender === 'female'}
             onChange={setGender}
           />
           <Radio
             name="gender"
             value="male"
-            label="Male"
+            label={t('fields.gender.options.male')}
             checked={gender === 'male'}
             onChange={setGender}
           />
           <Radio
             name="gender"
             value="other"
-            label="Other"
+            label={t('fields.gender.options.other')}
             checked={gender === 'other'}
             onChange={setGender}
           />
@@ -219,8 +229,8 @@ export const UserFormUncontrolled = React.forwardRef<
         <TextField
           id="country"
           name="country"
-          label="Country"
-          placeholder="Start typing…"
+          label={t('fields.country.label')}
+          placeholder={t('fields.country.placeholder')}
           listId="countries-list"
           datalistOptions={countries}
           ref={countryRef}
@@ -232,12 +242,17 @@ export const UserFormUncontrolled = React.forwardRef<
         <Upload
           id="picture"
           name="picture"
-          hint="Picture PNG/JPEG, max 2MB"
+          hint={t('fields.picture.hint')}
           error={errors.file}
           onError={(msg) => {
             setErrors((e) => {
-              const { file, ...rest } = e;
-              return msg ? { ...rest, file: msg } : rest;
+              const next = { ...e };
+              if (msg) {
+                next.file = t('errors.file', { msg });
+              } else {
+                delete next.file;
+              }
+              return next;
             });
           }}
           onValidFile={({ base64 }) => {
@@ -249,7 +264,7 @@ export const UserFormUncontrolled = React.forwardRef<
       <div className="form-row checkbox-row">
         <Checkbox
           name="tc"
-          label="Accept Terms and Conditions"
+          label={t('fields.tc.label')}
           checked={tcChecked}
           onChange={setTcChecked}
           required

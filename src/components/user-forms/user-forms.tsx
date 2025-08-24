@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import React, { useRef, useState } from 'react';
 
 import {
@@ -12,6 +13,8 @@ import { Button, Dialog } from '@rs-react/components/shared';
 import './user-forms.css';
 
 export function UserForms() {
+  const t = useTranslations('userForm');
+
   const [openUncontrolled, setOpenUncontrolled] = useState(false);
   const [openRHF, setOpenRHF] = useState(false);
 
@@ -23,15 +26,15 @@ export function UserForms() {
   return (
     <div>
       <div className="user-form-controls">
-        <Button onClick={() => setOpenUncontrolled(true)} text="Open Uncontrolled Form" />
-        <Button onClick={() => setOpenRHF(true)} text="Open React Hook Form" />
+        <Button onClick={() => setOpenUncontrolled(true)} text={t('buttons.openUncontrolled')} />
+        <Button onClick={() => setOpenRHF(true)} text={t('buttons.openRHF')} />
       </div>
 
       <Dialog
         isOpen={openUncontrolled}
         onClose={() => setOpenUncontrolled(false)}
         onSubmit={() => uncontrolledRef.current?.submit()}
-        title="Profile"
+        title={t('title')}
       >
         <UserFormUncontrolled ref={uncontrolledRef} />
       </Dialog>
@@ -45,7 +48,7 @@ export function UserForms() {
         }}
         onSubmit={() => rhfSubmitRef.current?.()}
         isSubmitDisabled={!rhfValid}
-        title="Profile"
+        title={t('title')}
       >
         <UserFormRHF
           onValidityChangeAction={setRhfValid}

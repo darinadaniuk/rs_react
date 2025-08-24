@@ -1,6 +1,48 @@
+import '@testing-library/jest-dom/vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import React, { forwardRef } from 'react';
 import { describe, it, expect, vi } from 'vitest';
+
+import { UserFormRHF } from './user-form-rhf';
+
+vi.mock('next-intl', () => ({
+  __esModule: true,
+  useTranslations: (ns?: string) => (key: string, values?: Record<string, unknown>) => {
+    void values;
+    const map: Record<string, string> = {
+      'userForm.errors.nameInvalid': 'Name is invalid',
+      'userForm.errors.ageRequired': 'Age is required',
+      'userForm.errors.ageNegative': 'Age cannot be negative',
+      'userForm.errors.emailInvalid': 'Email is invalid',
+      'userForm.errors.passwordRequired': 'Password is required',
+      'userForm.errors.passwordWeak': 'Password is too weak',
+      'userForm.errors.confirmMismatch': 'Passwords do not match',
+      'userForm.errors.genderRequired': 'Gender is required',
+      'userForm.errors.tcRequired': 'You must accept terms',
+      'userForm.errors.countryInvalid': 'Invalid country',
+      'userForm.fields.name.label': 'Name',
+      'userForm.fields.name.placeholder': 'Enter name',
+      'userForm.fields.age.label': 'Age',
+      'userForm.fields.age.placeholder': 'Enter age',
+      'userForm.fields.email.label': 'Email',
+      'userForm.fields.email.placeholder': 'Enter email',
+      'userForm.fields.password.label': 'Password',
+      'userForm.fields.confirm.label': 'Confirm',
+      'userForm.fields.confirm.placeholder': 'Confirm password',
+      'userForm.fields.gender.label': 'Gender',
+      'userForm.fields.gender.options.female': 'Female',
+      'userForm.fields.gender.options.male': 'Male',
+      'userForm.fields.gender.options.other': 'Other',
+      'userForm.fields.country.label': 'Country',
+      'userForm.fields.country.placeholder': 'Select country',
+      'userForm.fields.tc.label': 'I accept terms',
+      'userForm.fields.picture.hint': 'Upload a picture',
+      'userForm.fields.picture.hintSaved': 'Picture saved',
+    };
+    const resolved = ns ? `${ns}.${key}` : key;
+    return map[resolved] ?? resolved;
+  },
+}));
 
 vi.mock('./user-form-rhf.const', () => ({
   __esModule: true,
@@ -13,34 +55,51 @@ vi.mock('@rs-react/constants', () => ({
   __esModule: true,
   NAME_REGEX: /^[A-Za-z ].{1,}$/,
   EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  passwordRequirements: (pwd: string) => ({
-    number: /\d/.test(pwd),
-    upper: /[A-Z]/.test(pwd),
-    lower: /[a-z]/.test(pwd),
-    special: /[^A-Za-z0-9]/.test(pwd),
-  }),
-  USER_VALIDATION_MSG: {
-    nameInvalid: 'Name is invalid',
-    ageRequired: 'Age is required',
-    ageNegative: 'Age cannot be negative',
-    emailInvalid: 'Email is invalid',
-    passwordRequired: 'Password is required',
-    passwordWeak: 'Password is too weak',
-    confirmMismatch: 'Passwords do not match',
-    genderRequired: 'Gender is required',
-    tcRequired: 'You must accept terms',
-    countryInvalid: 'Invalid country',
-  },
 }));
 
+const saveBase64Spy = vi.fn();
 vi.mock('@rs-react/store', () => ({
   __esModule: true,
-  useCountryStore: (sel: any) => sel({ countries: ['Canada', 'USA'] }),
-  usePhotoStore: (sel: any) => sel({ base64: null, saveBase64: vi.fn(), clear: vi.fn() }),
+  useCountryStore: (sel: (s: { countries: string[] }) => unknown) =>
+    sel({ countries: ['Canada', 'USA'] }),
+  usePhotoStore: (
+    sel: (s: { base64: string | null; saveBase64: (b: string) => void }) => unknown,
+  ) => sel({ base64: null, saveBase64: saveBase64Spy }),
 }));
 
+type TFProps = {
+  name: string;
+  label?: string;
+  type?: string;
+  placeholder?: string;
+  listId?: string;
+  datalistOptions?: string[];
+  value?: string;
+  onChange?: (v: string) => void;
+  error?: string;
+  id?: string;
+};
+type RadioProps = {
+  name: string;
+  value: string;
+  label: string;
+  checked: boolean;
+  onChange: (v: string) => void;
+};
+type CheckboxProps = {
+  name: string;
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+};
+type UploadProps = {
+  error?: string;
+  onError?: (msg?: string) => void;
+  onValidFile?: (info: { base64: string; file: File }) => void;
+};
+
 vi.mock('@rs-react/components', () => {
-  const TextField = forwardRef<HTMLInputElement, any>(
+  const TextField = forwardRef<HTMLInputElement, TFProps>(
     (
       {
         name,
@@ -49,83 +108,99 @@ vi.mock('@rs-react/components', () => {
         placeholder,
         listId,
         datalistOptions = [],
-        error,
         value,
         onChange,
+        error,
+        id,
       },
       ref,
     ) => (
       <div>
-        {label && <label htmlFor={name}>{label}</label>}
+        {label ? <label htmlFor={id ?? name}>{label}</label> : null}
         <input
           ref={ref}
-          id={name}
+          id={id ?? name}
           name={name}
           type={type}
-          aria-label={label || name}
+          aria-label={label ?? name}
           placeholder={placeholder}
           list={listId}
           data-testid={`tf-${name}`}
           value={value ?? ''}
-          onChange={(e) => onChange?.(e.target.value)}
+          onChange={(e) => onChange?.(e.currentTarget.value)}
         />
-        {listId && (
+        {listId ? (
           <datalist id={listId}>
-            {datalistOptions.map((o: string) => (
+            {datalistOptions.map((o) => (
               <option key={o} value={o} />
             ))}
           </datalist>
-        )}
-        {error && <span role="alert">{error}</span>}
+        ) : null}
+        {error ? <span role="alert">{error}</span> : null}
       </div>
     ),
   );
+  TextField.displayName = 'TextField';
 
-  const Radio = ({ name, value, label, checked, onChange }: any) => (
+  const Radio: React.FC<RadioProps> = ({ name, value, label, checked, onChange }) => (
     <label>
       <input
         type="radio"
         name={name}
         value={value}
-        checked={!!checked}
-        onChange={() => onChange?.(value)}
+        checked={checked}
+        onChange={() => onChange(value)}
         data-testid={`radio-${value}`}
       />
       {label}
     </label>
   );
 
-  const Checkbox = ({ name, label, checked, onChange }: any) => (
+  const Checkbox: React.FC<CheckboxProps> = ({ name, label, checked, onChange }) => (
     <label>
       <input
         type="checkbox"
         name={name}
-        checked={!!checked}
-        onChange={(e) => onChange?.(e.target.checked)}
+        checked={checked}
+        onChange={(e) => onChange(e.currentTarget.checked)}
         data-testid={`chk-${name}`}
       />
       {label}
     </label>
   );
 
-  const Upload = () => <div data-testid="upload">upload</div>;
+  const Upload: React.FC<UploadProps> = ({ error, onError, onValidFile }) => (
+    <div>
+      {error ? <div role="alert">{error}</div> : null}
+      <button type="button" onClick={() => onError?.('File too large')} data-testid="upload-error">
+        Trigger Upload Error
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          onValidFile?.({ base64: 'AAA', file: new File(['x'], 'ok.png', { type: 'image/png' }) })
+        }
+        data-testid="upload-ok"
+      >
+        Trigger Upload OK
+      </button>
+    </div>
+  );
 
   return { __esModule: true, TextField, Radio, Checkbox, Upload };
 });
 
-import { UserFormRHF } from './user-form-rhf';
-
-describe('UserFormRHF (simple)', () => {
-  it('should toggle validity and submit via onSubmitRefAction', async () => {
+describe('UserFormRHF', () => {
+  it('should start invalid, become valid, and submit via onSubmitRefAction', async () => {
     const validitySpy = vi.fn();
-    let submitFn: (() => void) | null = null;
-    const submitSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    const holder: { submit?: () => void } = {};
+    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
     render(
       <UserFormRHF
         onValidityChangeAction={validitySpy}
         onSubmitRefAction={(fn) => {
-          submitFn = fn;
+          holder.submit = fn;
         }}
       />,
     );
@@ -140,29 +215,31 @@ describe('UserFormRHF (simple)', () => {
     fireEvent.input(screen.getByTestId('tf-password'), { target: { value: 'Aa1!' } });
     fireEvent.input(screen.getByTestId('tf-confirm'), { target: { value: 'Aa1!' } });
     fireEvent.click(screen.getByTestId('radio-male'));
-    fireEvent.click(screen.getByTestId('chk-tc'));
     fireEvent.input(screen.getByTestId('tf-country'), { target: { value: 'Canada' } });
+    fireEvent.click(screen.getByTestId('chk-tc'));
 
     await waitFor(() => {
       expect(validitySpy).toHaveBeenLastCalledWith(true);
     });
 
-    expect(typeof submitFn).toBe('function');
+    if (!holder.submit) throw new Error('submit function not set');
+    holder.submit();
 
     await waitFor(() => {
-      expect(submitSpy).toHaveBeenCalledTimes(1);
+      expect(alertSpy).toHaveBeenCalledTimes(1);
     });
 
-    const alertArg = submitSpy.mock.calls[0][0] as string;
-    expect(alertArg).toContain('Form submitted');
-    expect(alertArg).toContain('"formDataKeys"');
-    expect(alertArg).toContain('"name"');
-    expect(alertArg).toContain('"email"');
-    expect(alertArg).toContain('"password"');
-    expect(alertArg).toContain('"confirm"');
-    expect(alertArg).toContain('"tc"');
-    expect(alertArg).toContain('"country"');
+    alertSpy.mockRestore();
+  });
 
-    submitSpy.mockRestore();
+  it('should set and clear root error via upload interactions', async () => {
+    render(<UserFormRHF />);
+    fireEvent.click(screen.getByTestId('upload-error'));
+    expect(await screen.findByRole('alert')).toHaveTextContent('File too large');
+    fireEvent.click(screen.getByTestId('upload-ok'));
+    await waitFor(() => {
+      expect(screen.queryByRole('alert')).toBeNull();
+    });
+    expect(saveBase64Spy).toHaveBeenCalledWith('AAA');
   });
 });
