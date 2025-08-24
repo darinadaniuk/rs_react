@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import React, { useRef, useState, useImperativeHandle } from 'react';
 
-import { useCountryStore, usePhotoStore } from '@rs-react/store';
+import { useCountryStore, usePhotoStore, useUserStore, type UserData } from '@rs-react/store';
 import { Checkbox, Upload, Radio, TextField } from '@rs-react/components';
 
 import './user-form-uncontrolled.css';
@@ -31,6 +31,8 @@ export const UserFormUncontrolled = React.forwardRef<
   const countries = useCountryStore((store) => store.countries);
   const savePhoto = usePhotoStore((store) => store.saveBase64);
   const clearPhoto = usePhotoStore((store) => store.clear);
+  const saveUser = useUserStore((store) => store.save);
+  const resetUser = useUserStore((store) => store.reset);
 
   const formRef = useRef<HTMLFormElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -97,9 +99,9 @@ export const UserFormUncontrolled = React.forwardRef<
   function validate(): boolean {
     const nextErrors = collectErrors();
     setErrors(nextErrors);
-    const ok = Object.keys(nextErrors).length === 0;
-    onValidityChange?.(ok);
-    return ok;
+    const valid = Object.keys(nextErrors).length === 0;
+    onValidityChange?.(valid);
+    return valid;
   }
 
   function onSubmitInternal(e: React.FormEvent<HTMLFormElement>) {
@@ -107,8 +109,23 @@ export const UserFormUncontrolled = React.forwardRef<
     if (!validate()) return;
 
     const fd = new FormData(e.currentTarget);
-    const data = Object.fromEntries(fd.entries());
-    onSubmit?.(data);
+    const raw = Object.fromEntries(fd.entries());
+
+    const pictureBase64 = usePhotoStore.getState().base64 ?? null;
+
+    const payload: UserData = {
+      name: String(raw.name ?? ''),
+      age: Number(raw.age ?? 0),
+      email: String(raw.email ?? ''),
+      password: String(raw.password ?? ''),
+      gender: gender as UserData['gender'],
+      country: raw.country ? String(raw.country) : undefined,
+      tc: tcChecked,
+      pictureBase64,
+    };
+
+    saveUser(payload);
+    onSubmit?.(raw);
   }
 
   function onReset() {
@@ -118,11 +135,12 @@ export const UserFormUncontrolled = React.forwardRef<
     setTcChecked(false);
     setGender('');
     onValidityChange?.(false);
+    resetUser();
   }
 
   function onAnyInput() {
-    const ok = Object.keys(collectErrors()).length === 0;
-    onValidityChange?.(ok);
+    const valid = Object.keys(collectErrors()).length === 0;
+    onValidityChange?.(valid);
   }
 
   useImperativeHandle(ref, () => ({

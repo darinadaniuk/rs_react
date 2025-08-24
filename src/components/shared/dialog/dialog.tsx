@@ -13,8 +13,11 @@ export interface DialogProps {
   title?: string;
   children?: React.ReactNode;
   isSubmitDisabled?: boolean;
+  withSubmit?: boolean;
+  withReset?: boolean;
   onClose: () => void;
   onSubmit?: () => void;
+  onReset?: () => void;
 }
 
 export function Dialog({
@@ -23,7 +26,10 @@ export function Dialog({
   children,
   onClose,
   onSubmit,
+  onReset,
   isSubmitDisabled = false,
+  withSubmit = true,
+  withReset = false,
 }: DialogProps) {
   const t = useTranslations('dialog');
 
@@ -61,6 +67,7 @@ export function Dialog({
   const handleSubmitClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     onSubmit?.();
+    onClose();
   };
 
   const dialog = (
@@ -82,8 +89,13 @@ export function Dialog({
         <div className="dialog-body">{children}</div>
 
         <div className="dialog-actions">
-          <Button text={t('close')} onClick={onClose} />
-          <Button text={t('submit')} onClick={handleSubmitClick} disabled={isSubmitDisabled} />
+          {withReset && <Button text={t('reset')} onClick={onReset} />}
+          <>
+            {withSubmit && (
+              <Button text={t('submit')} onClick={handleSubmitClick} disabled={isSubmitDisabled} />
+            )}
+            <Button text={t('close')} onClick={onClose} />
+          </>
         </div>
       </div>
     </div>

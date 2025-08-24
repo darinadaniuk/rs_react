@@ -1,0 +1,25 @@
+.profile-modal {
+  display: grid;
+  gap: 1rem;
+}
+
+.profile-modal-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-modal-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+}
+
+.profile-modal-list dt {
+  font-weight: 600;
+}
+
+.profile-modal-empty {
+  opacity: .8;
+}

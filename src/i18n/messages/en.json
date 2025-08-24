@@ -30,7 +30,7 @@
   },
   "userForm": {
     "aria": {
-      "formLabel": "User registration form"
+      "formLabel": "User form"
     },
     "fields": {
       "name": { "label": "Name", "placeholder": "John Doe" },
@@ -72,6 +72,35 @@
   },
   "dialog": {
     "close": "Close",
-    "submit": "Submit"
+    "submit": "Submit",
+    "reset": "Reset"
+  },
+  "cardDetails": {
+    "title": "Card details",
+    "close": "Close",
+    "imageAlt": "{name}",
+    "id": "Id",
+    "name": "Name",
+    "species": "Species",
+    "gender": "Gender",
+    "status": "Status",
+    "type": "Type",
+    "location": "Location",
+    "created": "Created",
+    "unknown": "Unknown"
+  },
+  "profileDialog": {
+    "title": "Profile",
+    "pictureAlt": "Profile picture",
+    "empty": "No profile data yet",
+    "edit": "Edit",
+    "close": "Close",
+    "fields": {
+      "name": "Name",
+      "age": "Age",
+      "email": "Email",
+      "gender": "Gender",
+      "country": "Country"
+    }
   }
 }

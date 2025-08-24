@@ -72,6 +72,35 @@
   },
   "dialog": {
     "close": "Закрыть",
-    "submit": "Отправить"
+    "submit": "Отправить",
+    "reset": "Очистить"
+  },
+  "cardDetails": {
+    "title": "Детали карточки",
+    "close": "Закрыть",
+    "imageAlt": "{name}",
+    "id": "ID",
+    "name": "Имя",
+    "species": "Вид",
+    "gender": "Пол",
+    "status": "Статус",
+    "type": "Тип",
+    "location": "Локация",
+    "created": "Создано",
+    "unknown": "Неизвестно"
+  },
+  "profileDialog": {
+    "title": "Профиль",
+    "pictureAlt": "Фотография профиля",
+    "empty": "Данные профиля пока отсутствуют.",
+    "edit": "Редактировать",
+    "close": "Закрыть",
+    "fields": {
+      "name": "Имя",
+      "age": "Возраст",
+      "email": "Email",
+      "gender": "Пол",
+      "country": "Страна"
+    }
   }
 }

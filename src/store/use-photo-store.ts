@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 type PhotoState = {
-  base64: string; // store base64 (no data-url prefix)
+  base64: string;
   saveBase64: (b64: string) => void;
   clear: () => void;
 };

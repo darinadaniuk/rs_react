@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useTranslations, useFormatter } from 'next-intl';
 import { useContext } from 'react';
 
 import { Button } from '@rs-react/components/shared';
@@ -10,41 +11,58 @@ import { CardDetailContext } from '@rs-react/context';
 import './card-details.css';
 
 export function CardDetails() {
+  const t = useTranslations('cardDetails');
+  const format = useFormatter();
+
   const cardDetail = useContext(CardDetailContext);
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const close = () => {
-    const search = searchParams.toString();
-    router.push(`/${search ? `?${search}` : ''}`);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('id');
+    const qs = params.toString();
+    router.push(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false });
   };
 
+  if (!cardDetail) return null;
+
   return (
-    <div className="card-details">
-      <Button text="Close" onClick={close} />
-      {cardDetail && (
-        <div className="details-data">
-          <Image
-            src={cardDetail.image}
-            alt={cardDetail.name}
-            fill
-            style={{ objectFit: 'contain' }}
-          />
-          <p>Id: {cardDetail.id}</p>
-          <p>Name: {cardDetail.name}</p>
-          <p>Species: {cardDetail.species}</p>
-          <p>Gender: {cardDetail.gender}</p>
-          <p>Status: {cardDetail.status}</p>
-          <p>Type: {cardDetail.type || 'Unknown'}</p>
-          <p>Location: {cardDetail.location.name || 'Unknown'}</p>
-          <p>
-            Created:{' '}
-            {new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(
-              new Date(cardDetail.created),
-            )}
-          </p>
-        </div>
-      )}
+    <div className="card-details" aria-label={t('title')}>
+      <Button text={t('close')} onClick={close} />
+      <div className="details-data">
+        <Image
+          src={cardDetail.image}
+          alt={t('imageAlt', { name: cardDetail.name })}
+          width={200}
+          height={320}
+        />
+        <p>
+          {t('id')}: {cardDetail.id}
+        </p>
+        <p>
+          {t('name')}: {cardDetail.name}
+        </p>
+        <p>
+          {t('species')}: {cardDetail.species}
+        </p>
+        <p>
+          {t('gender')}: {cardDetail.gender}
+        </p>
+        <p>
+          {t('status')}: {cardDetail.status}
+        </p>
+        <p>
+          {t('type')}: {cardDetail.type || t('unknown')}
+        </p>
+        <p>
+          {t('location')}: {cardDetail.location.name || t('unknown')}
+        </p>
+        <p>
+          {t('created')}: {format.dateTime(new Date(cardDetail.created), { dateStyle: 'medium' })}
+        </p>
+      </div>
     </div>
   );
 }

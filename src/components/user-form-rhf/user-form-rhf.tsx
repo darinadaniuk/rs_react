@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 import { Checkbox, Upload, Radio, TextField } from '@rs-react/components';
 import { EMAIL_REGEX, NAME_REGEX } from '@rs-react/constants';
-import { useCountryStore, usePhotoStore } from '@rs-react/store';
+import { useCountryStore, usePhotoStore, useUserStore } from '@rs-react/store';
 
 import { strongPw, GENDERS } from './user-form-rhf.const';
 
@@ -26,6 +26,7 @@ export function UserFormRHF({
   const countries = useCountryStore((s) => s.countries);
   const photoBase64 = usePhotoStore((s) => s.base64);
   const saveBase64 = usePhotoStore((s) => s.saveBase64);
+  const saveUser = useUserStore((s) => s.save);
 
   const Schema = useMemo(
     () =>
@@ -93,27 +94,28 @@ export function UserFormRHF({
     onValidityChangeAction?.(isValid);
   }, [isValid, onValidityChangeAction]);
 
-  const onSubmit: SubmitHandler<FormValues> = (data, event) => {
-    const formEl = (event?.target as HTMLFormElement) || undefined;
-    const fd = formEl ? new FormData(formEl) : undefined;
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    const pictureBase64 =
+      photoBase64 && !photoBase64.startsWith('data:')
+        ? `${photoBase64.startsWith('iVBORw0K') ? 'data:image/png;base64,' : 'data:image/jpeg;base64,'}${photoBase64}`
+        : (photoBase64 ?? null);
 
-    alert(
-      'Form submitted ✅\n\n' +
-        JSON.stringify(
-          {
-            data,
-            formDataKeys: fd ? Array.from(fd.keys()) : [],
-          },
-          null,
-          2,
-        ),
-    );
+    saveUser({
+      name: data.name,
+      age: data.age,
+      email: data.email,
+      password: data.password,
+      gender: data.gender as 'female' | 'male' | 'other',
+      country: data.country || undefined,
+      tc: data.tc,
+      pictureBase64,
+    });
   };
 
   useEffect(() => {
     const submitFn = () => handleSubmit(onSubmit)();
     onSubmitRefAction?.(submitFn);
-  }, [handleSubmit, onSubmitRefAction]);
+  }, [handleSubmit, onSubmitRefAction, onSubmit]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="form" noValidate>
@@ -282,11 +284,6 @@ export function UserFormRHF({
         <Upload
           id="picture"
           name="picture"
-          hint={
-            photoBase64
-              ? t('fields.picture.hintSaved', { sizeKB: Math.round(photoBase64.length / 1024) })
-              : t('fields.picture.hint')
-          }
           error={errors.root?.message as string | undefined}
           onError={(msg) => {
             if (msg) setError('root', { type: 'manual', message: msg });

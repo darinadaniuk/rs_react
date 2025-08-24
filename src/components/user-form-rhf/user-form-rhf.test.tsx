@@ -1,15 +1,18 @@
 import '@testing-library/jest-dom/vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React, { forwardRef } from 'react';
+import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 
-import { UserFormRHF } from './user-form-rhf';
+const h = vi.hoisted(() => ({
+  saveBase64Spy: vi.fn(),
+  saveUserSpy: vi.fn(),
+}));
 
 vi.mock('next-intl', () => ({
   __esModule: true,
-  useTranslations: (ns?: string) => (key: string, values?: Record<string, unknown>) => {
+  useTranslations: () => (key: string, values?: Record<string, unknown>) => {
     void values;
-    const map: Record<string, string> = {
+    const m: Record<string, string> = {
       'userForm.errors.nameInvalid': 'Name is invalid',
       'userForm.errors.ageRequired': 'Age is required',
       'userForm.errors.ageNegative': 'Age cannot be negative',
@@ -27,6 +30,7 @@ vi.mock('next-intl', () => ({
       'userForm.fields.email.label': 'Email',
       'userForm.fields.email.placeholder': 'Enter email',
       'userForm.fields.password.label': 'Password',
+      'userForm.fields.password.placeholder': 'Enter password',
       'userForm.fields.confirm.label': 'Confirm',
       'userForm.fields.confirm.placeholder': 'Confirm password',
       'userForm.fields.gender.label': 'Gender',
@@ -36,11 +40,8 @@ vi.mock('next-intl', () => ({
       'userForm.fields.country.label': 'Country',
       'userForm.fields.country.placeholder': 'Select country',
       'userForm.fields.tc.label': 'I accept terms',
-      'userForm.fields.picture.hint': 'Upload a picture',
-      'userForm.fields.picture.hintSaved': 'Picture saved',
     };
-    const resolved = ns ? `${ns}.${key}` : key;
-    return map[resolved] ?? resolved;
+    return m[key] ?? key;
   },
 }));
 
@@ -48,99 +49,72 @@ vi.mock('./user-form-rhf.const', () => ({
   __esModule: true,
   strongPw: (v: string) =>
     /[A-Z]/.test(v) && /[a-z]/.test(v) && /\d/.test(v) && /[^A-Za-z0-9]/.test(v),
-  GENDERS: ['female', 'male', 'other', 'prefer_not'],
+  GENDERS: ['female', 'male', 'other'],
 }));
 
 vi.mock('@rs-react/constants', () => ({
   __esModule: true,
-  NAME_REGEX: /^[A-Za-z ].{1,}$/,
+  NAME_REGEX: /^[A-Za-z][A-Za-z ]+$/,
   EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 }));
 
-const saveBase64Spy = vi.fn();
-vi.mock('@rs-react/store', () => ({
-  __esModule: true,
-  useCountryStore: (sel: (s: { countries: string[] }) => unknown) =>
-    sel({ countries: ['Canada', 'USA'] }),
-  usePhotoStore: (
-    sel: (s: { base64: string | null; saveBase64: (b: string) => void }) => unknown,
-  ) => sel({ base64: null, saveBase64: saveBase64Spy }),
-}));
-
-type TFProps = {
-  name: string;
-  label?: string;
-  type?: string;
-  placeholder?: string;
-  listId?: string;
-  datalistOptions?: string[];
-  value?: string;
-  onChange?: (v: string) => void;
-  error?: string;
-  id?: string;
-};
-type RadioProps = {
-  name: string;
-  value: string;
-  label: string;
-  checked: boolean;
-  onChange: (v: string) => void;
-};
-type CheckboxProps = {
-  name: string;
-  label: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-};
-type UploadProps = {
-  error?: string;
-  onError?: (msg?: string) => void;
-  onValidFile?: (info: { base64: string; file: File }) => void;
-};
+vi.mock('@rs-react/store', () => {
+  const photo = { base64: null as string | null, saveBase64: h.saveBase64Spy, clear: vi.fn() };
+  const useCountryStore = (sel: (s: { countries: string[] }) => unknown) =>
+    sel({ countries: ['Canada', 'USA'] });
+  const usePhotoStore = (sel: (s: typeof photo) => unknown) => sel(photo);
+  (usePhotoStore as unknown as { getState: () => typeof photo }).getState = () => photo;
+  const useUserStore = (sel: (s: { save: (v: unknown) => void }) => unknown) =>
+    sel({ save: h.saveUserSpy });
+  return { __esModule: true, useCountryStore, usePhotoStore, useUserStore };
+});
 
 vi.mock('@rs-react/components', () => {
-  const TextField = forwardRef<HTMLInputElement, TFProps>(
-    (
-      {
-        name,
-        label,
-        type = 'text',
-        placeholder,
-        listId,
-        datalistOptions = [],
-        value,
-        onChange,
-        error,
-        id,
-      },
-      ref,
-    ) => (
-      <div>
-        {label ? <label htmlFor={id ?? name}>{label}</label> : null}
-        <input
-          ref={ref}
-          id={id ?? name}
-          name={name}
-          type={type}
-          aria-label={label ?? name}
-          placeholder={placeholder}
-          list={listId}
-          data-testid={`tf-${name}`}
-          value={value ?? ''}
-          onChange={(e) => onChange?.(e.currentTarget.value)}
-        />
-        {listId ? (
-          <datalist id={listId}>
-            {datalistOptions.map((o) => (
-              <option key={o} value={o} />
-            ))}
-          </datalist>
-        ) : null}
-        {error ? <span role="alert">{error}</span> : null}
-      </div>
-    ),
+  type TextFieldProps = {
+    name: string;
+    label?: string;
+    type?: string;
+    placeholder?: string;
+    listId?: string;
+    datalistOptions?: string[];
+    value?: string;
+    onChange?: (v: string) => void;
+    error?: string;
+    id?: string;
+  } & Record<string, unknown>;
+
+  const TextField: React.FC<TextFieldProps> = (p) => (
+    <div>
+      {p.label ? <label htmlFor={p.id ?? p.name}>{p.label}</label> : null}
+      <input
+        id={p.id ?? p.name}
+        name={p.name}
+        type={p.type ?? 'text'}
+        aria-label={p.label ?? p.name}
+        placeholder={p.placeholder}
+        list={p.listId}
+        data-testid={`tf-${p.name}`}
+        value={p.value ?? ''}
+        onChange={(e) => p.onChange?.(e.currentTarget.value)}
+      />
+      {p.listId ? (
+        <datalist id={p.listId}>
+          {(p.datalistOptions ?? []).map((o) => (
+            <option key={o} value={o} />
+          ))}
+        </datalist>
+      ) : null}
+      {p.error ? <span role="alert">{p.error}</span> : null}
+    </div>
   );
-  TextField.displayName = 'TextField';
+
+  type RadioProps = {
+    name: string;
+    value: string;
+    label: string;
+    checked: boolean;
+    onChange: (v: string) => void;
+  };
 
   const Radio: React.FC<RadioProps> = ({ name, value, label, checked, onChange }) => (
     <label>
@@ -156,7 +130,15 @@ vi.mock('@rs-react/components', () => {
     </label>
   );
 
-  const Checkbox: React.FC<CheckboxProps> = ({ name, label, checked, onChange }) => (
+  type CheckboxProps = {
+    name: string;
+    label: string;
+    checked: boolean;
+    onChange: (v: boolean) => void;
+    required?: boolean;
+  };
+
+  const Checkbox: React.FC<CheckboxProps> = ({ name, label, checked, onChange, required }) => (
     <label>
       <input
         type="checkbox"
@@ -164,25 +146,34 @@ vi.mock('@rs-react/components', () => {
         checked={checked}
         onChange={(e) => onChange(e.currentTarget.checked)}
         data-testid={`chk-${name}`}
+        required={required}
       />
       {label}
     </label>
   );
 
+  type UploadProps = {
+    id?: string;
+    name?: string;
+    error?: string;
+    onError?: (msg?: string) => void;
+    onValidFile?: (info: { base64: string; file: File }) => void;
+  };
+
   const Upload: React.FC<UploadProps> = ({ error, onError, onValidFile }) => (
     <div>
       {error ? <div role="alert">{error}</div> : null}
-      <button type="button" onClick={() => onError?.('File too large')} data-testid="upload-error">
-        Trigger Upload Error
+      <button type="button" data-testid="upload-error" onClick={() => onError?.('Too big')}>
+        Err
       </button>
       <button
         type="button"
-        onClick={() =>
-          onValidFile?.({ base64: 'AAA', file: new File(['x'], 'ok.png', { type: 'image/png' }) })
-        }
         data-testid="upload-ok"
+        onClick={() =>
+          onValidFile?.({ base64: 'AAA', file: new File(['x'], 'a.png', { type: 'image/png' }) })
+        }
       >
-        Trigger Upload OK
+        Ok
       </button>
     </div>
   );
@@ -190,24 +181,23 @@ vi.mock('@rs-react/components', () => {
   return { __esModule: true, TextField, Radio, Checkbox, Upload };
 });
 
+import { UserFormRHF } from './user-form-rhf';
+
 describe('UserFormRHF', () => {
-  it('should start invalid, become valid, and submit via onSubmitRefAction', async () => {
+  it('validates, submits via onSubmitRefAction, and handles upload flow', async () => {
     const validitySpy = vi.fn();
-    const holder: { submit?: () => void } = {};
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    let submitFn: (() => void) | undefined;
 
     render(
       <UserFormRHF
         onValidityChangeAction={validitySpy}
         onSubmitRefAction={(fn) => {
-          holder.submit = fn;
+          submitFn = fn;
         }}
       />,
     );
 
-    await waitFor(() => {
-      expect(validitySpy).toHaveBeenCalledWith(false);
-    });
+    await waitFor(() => expect(validitySpy).toHaveBeenCalledWith(false));
 
     fireEvent.input(screen.getByTestId('tf-name'), { target: { value: 'John Doe' } });
     fireEvent.input(screen.getByTestId('tf-age'), { target: { value: '30' } });
@@ -218,28 +208,18 @@ describe('UserFormRHF', () => {
     fireEvent.input(screen.getByTestId('tf-country'), { target: { value: 'Canada' } });
     fireEvent.click(screen.getByTestId('chk-tc'));
 
-    await waitFor(() => {
-      expect(validitySpy).toHaveBeenLastCalledWith(true);
-    });
+    await waitFor(() => expect(validitySpy).toHaveBeenLastCalledWith(true));
 
-    if (!holder.submit) throw new Error('submit function not set');
-    holder.submit();
+    expect(submitFn).toBeTruthy();
+    submitFn?.();
 
-    await waitFor(() => {
-      expect(alertSpy).toHaveBeenCalledTimes(1);
-    });
+    await waitFor(() => expect(h.saveUserSpy).toHaveBeenCalledTimes(1));
 
-    alertSpy.mockRestore();
-  });
-
-  it('should set and clear root error via upload interactions', async () => {
-    render(<UserFormRHF />);
     fireEvent.click(screen.getByTestId('upload-error'));
-    expect(await screen.findByRole('alert')).toHaveTextContent('File too large');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Too big');
+
     fireEvent.click(screen.getByTestId('upload-ok'));
-    await waitFor(() => {
-      expect(screen.queryByRole('alert')).toBeNull();
-    });
-    expect(saveBase64Spy).toHaveBeenCalledWith('AAA');
+    await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
+    expect(h.saveBase64Spy).toHaveBeenCalledWith('AAA');
   });
 });

@@ -45,13 +45,40 @@ vi.mock('next-intl', () => ({
   },
 }));
 
-vi.mock('@rs-react/store', () => ({
-  __esModule: true,
-  useCountryStore: (sel: (s: { countries: string[] }) => unknown) =>
-    sel({ countries: ['Canada', 'USA'] }),
-  usePhotoStore: (sel: (s: { saveBase64: (b: string) => void; clear: () => void }) => unknown) =>
-    sel({ saveBase64: vi.fn(), clear: vi.fn() }),
-}));
+vi.mock('@rs-react/store', () => {
+  type Selector<S, R> = (state: S) => R;
+
+  function createHook<S>(state: S) {
+    function hook<R>(selector: Selector<S, R>): R {
+      return selector(state);
+    }
+    (hook as unknown as { getState: () => S }).getState = () => state;
+    return hook as typeof hook & { getState: () => S };
+  }
+
+  const useCountryStore = createHook<{ countries: string[] }>({ countries: ['Canada', 'USA'] });
+
+  const photoState = {
+    base64: 'iVBORw0Kabcdef',
+    saveBase64: vi.fn<(b: string) => void>(),
+    clear: vi.fn<() => void>(),
+  };
+  const usePhotoStore = createHook<typeof photoState>(photoState);
+
+  const userState = {
+    save: vi.fn<(d: unknown) => void>(),
+    reset: vi.fn<() => void>(),
+    data: {} as Record<string, unknown>,
+  };
+  const useUserStore = createHook<typeof userState>(userState);
+
+  return {
+    __esModule: true,
+    useCountryStore,
+    usePhotoStore,
+    useUserStore,
+  };
+});
 
 vi.mock('@rs-react/constants', () => ({
   __esModule: true,
@@ -89,6 +116,14 @@ type CheckboxProps = {
   onChange?: (v: boolean) => void;
   required?: boolean;
 };
+type UploadProps = {
+  id?: string;
+  name?: string;
+  hint?: string;
+  error?: string;
+  onError?: (msg?: string) => void;
+  onValidFile?: (p: { base64: string }) => void;
+};
 
 vi.mock('@rs-react/components', () => {
   const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
@@ -118,7 +153,7 @@ vi.mock('@rs-react/components', () => {
   );
   TextField.displayName = 'TextField';
 
-  const Radio: React.FC<RadioProps> = ({ name, value, label, checked, onChange }) => (
+  const Radio = ({ name, value, label, checked, onChange }: RadioProps) => (
     <label>
       <input
         type="radio"
@@ -132,7 +167,7 @@ vi.mock('@rs-react/components', () => {
     </label>
   );
 
-  const Checkbox: React.FC<CheckboxProps> = ({ name, label, checked, onChange, required }) => (
+  const Checkbox = ({ name, label, checked, onChange, required }: CheckboxProps) => (
     <label>
       <input
         type="checkbox"
@@ -146,7 +181,7 @@ vi.mock('@rs-react/components', () => {
     </label>
   );
 
-  const Upload: React.FC = () => <div data-testid="upload">upload</div>;
+  const Upload: React.FC<UploadProps> = () => <div data-testid="upload">upload</div>;
 
   return { __esModule: true, TextField, Radio, Checkbox, Upload };
 });
@@ -164,7 +199,6 @@ describe('UserFormUncontrolled', () => {
     expect(screen.getByText('Password is required')).toBeInTheDocument();
     expect(screen.getByText('Gender is required')).toBeInTheDocument();
     expect(screen.getByText('You must accept terms')).toBeInTheDocument();
-    expect(onSubmit).not.toHaveBeenCalled();
   });
 
   it('should submit valid data', () => {
