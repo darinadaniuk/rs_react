@@ -46,9 +46,7 @@ describe('Search', () => {
 
   it('should not call search before debounce', () => {
     const searchFn = vi.fn();
-    render(
-      <Search search={searchFn} searchDebounce={500} placeholder="Search" />
-    );
+    render(<Search search={searchFn} searchDebounce={500} placeholder="Search" />);
     const input = screen.getByTestId('search-input');
 
     fireEvent.input(input, { target: { value: 'test' } });
@@ -59,9 +57,7 @@ describe('Search', () => {
 
   it('should call search after debounce with trimmed value', () => {
     const searchFn = vi.fn();
-    render(
-      <Search search={searchFn} searchDebounce={300} placeholder="Search" />
-    );
+    render(<Search search={searchFn} searchDebounce={300} placeholder="Search" />);
     const input = screen.getByTestId('search-input');
 
     fireEvent.input(input, { target: { value: '  morty  ' } });

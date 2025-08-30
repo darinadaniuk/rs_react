@@ -1,10 +1,30 @@
 .custom-checkbox {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
   cursor: pointer;
   user-select: none;
-  gap: 8px;
   outline: none;
+  position: relative;
+}
+
+.custom-checkbox.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.custom-checkbox-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 .custom-checkbox .custom-checkbox-box {
@@ -14,13 +34,25 @@
   border-radius: 4px;
   background-color: transparent;
   position: relative;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.05s ease;
+}
+
+.custom-checkbox:not(.disabled):hover .custom-checkbox-box {
+  border-color: #02c9a0;
+}
+.custom-checkbox:not(.disabled):active .custom-checkbox-box {
+  transform: scale(0.98);
+}
+
+.custom-checkbox-input:focus-visible + .custom-checkbox-box {
+  outline: 3px solid #02c9a0;
+  outline-offset: 3px;
 }
 
 .custom-checkbox.checked .custom-checkbox-box {
   background-color: #03dfb3;
+  border-color: #03dfb3;
 }
-
 .custom-checkbox.checked .custom-checkbox-box::after {
   content: '';
   position: absolute;
@@ -33,12 +65,38 @@
   transform: rotate(45deg);
 }
 
-.custom-checkbox.disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+.custom-checkbox-input:checked + .custom-checkbox-box {
+  background-color: #03dfb3;
+  border-color: #03dfb3;
+}
+.custom-checkbox-input:checked + .custom-checkbox-box::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 0px;
+  width: 6px;
+  height: 12px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
-.custom-checkbox-label {
-  font-size: 14px;
-  color: #333;
+.custom-checkbox-input:disabled + .custom-checkbox-box {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.custom-checkbox-input:indeterminate + .custom-checkbox-box {
+  background-color: transparent;
+}
+.custom-checkbox-input:indeterminate + .custom-checkbox-box::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: calc(50% - 1px);
+  height: 2px;
+  background: #03dfb3;
+  border: 0;
+  transform: none;
 }

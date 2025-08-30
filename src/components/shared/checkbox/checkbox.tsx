@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import React from 'react';
-
 import './checkbox.css';
 
 interface CustomCheckboxProps {
@@ -8,6 +7,10 @@ interface CustomCheckboxProps {
   onChange: (checked: boolean) => void;
   label?: string;
   disabled?: boolean;
+  name?: string;
+  value?: string;
+  required?: boolean;
+  className?: string;
 }
 
 export const Checkbox: React.FC<CustomCheckboxProps> = ({
@@ -15,33 +18,30 @@ export const Checkbox: React.FC<CustomCheckboxProps> = ({
   onChange,
   label,
   disabled = false,
+  name,
+  value = 'on',
+  required = false,
+  className,
 }) => {
-  const checkboxClass = classNames('custom-checkbox', { checked, disabled });
-
-  const toggle = (e: React.MouseEvent | React.KeyboardEvent): void => {
-    if (!disabled) {
-      e.stopPropagation();
-      onChange(!checked);
-    }
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent): void => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      toggle(e);
-    }
-  };
+  const wrapperClass = classNames('custom-checkbox', className, {
+    checked,
+    disabled,
+  });
 
   return (
-    <div
-      className={checkboxClass}
-      onClick={toggle}
-      role="checkbox"
-      aria-checked={checked}
-      tabIndex={0}
-      onKeyDown={onKeyDown}
-    >
+    <label className={wrapperClass}>
+      <input
+        name={name}
+        type="checkbox"
+        className="custom-checkbox-input"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        disabled={disabled}
+        required={required}
+        value={value}
+      />
       <span className="custom-checkbox-box" />
       {label && <span className="custom-checkbox-label">{label}</span>}
-    </div>
+    </label>
   );
 };

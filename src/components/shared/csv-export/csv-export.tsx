@@ -9,7 +9,7 @@ interface CSVExportProps<T extends Record<string, unknown>> {
 function convertToCSV<T extends Record<string, unknown>>(items: T[]): string {
   const tableHeaders = Object.keys(items[0]);
   const tableRows = items.map((item) =>
-    tableHeaders.map((key) => JSON.stringify(item[key] ?? '')).join(',')
+    tableHeaders.map((key) => JSON.stringify(item[key] ?? '')).join(','),
   );
 
   return [tableHeaders.join(','), ...tableRows].join('\n');
@@ -34,11 +34,5 @@ export function CSVExport<T extends Record<string, unknown>>({
     URL.revokeObjectURL(url);
   };
 
-  return (
-    <Button
-      onClick={download}
-      text={buttonText}
-      disabled={isDownloadDisabled}
-    />
-  );
+  return <Button onClick={download} text={buttonText} disabled={isDownloadDisabled} />;
 }

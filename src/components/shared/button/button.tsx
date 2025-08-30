@@ -1,11 +1,11 @@
+import React from 'react';
 import './button.css';
 
 interface ButtonProps {
   text?: string;
   type?: 'danger' | 'primary';
   disabled?: boolean;
-
-  onClick: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export function Button({
@@ -15,7 +15,12 @@ export function Button({
   onClick,
 }: ButtonProps) {
   return (
-    <button className={`button ${type}`} disabled={disabled} onClick={onClick}>
+    <button
+      type="button"
+      className={`button ${type}`}
+      disabled={disabled}
+      onClick={(e) => onClick?.(e)}
+    >
       {text}
     </button>
   );

@@ -17,6 +17,7 @@
   "header": {
     "title": "Курс RSS React",
     "userIconAria": "Пользователь",
+    "settingsIconAria": "Настройки",
     "name": "Дарья"
   },
   "nav": {
@@ -26,5 +27,80 @@
   "search": {
     "placeholder": "Поиск",
     "ariaLabel": "Поле поиска"
+  },
+  "userForm": {
+    "aria": {
+      "formLabel": "Пользователь"
+    },
+    "fields": {
+      "name": { "label": "Имя", "placeholder": "Джон Доу" },
+      "age": { "label": "Возраст", "placeholder": "30" },
+      "email": { "label": "Почта", "placeholder": "почта@example.com" },
+      "password": { "label": "Пароль", "placeholder": "••••••••" },
+      "confirm": { "label": "Подтвердите пароль", "placeholder": "Повторите пароль" },
+      "gender": {
+        "label": "Пол",
+        "options": { "female": "Женский", "male": "Мужской", "other": "Другое" }
+      },
+      "country": { "label": "Страна", "placeholder": "Начните печатать..." },
+      "picture": { "hint": "Фото PNG/JPEG, до 2 МБ" },
+      "tc": { "label": "Принимаю условия" }
+    },
+    "errors": {
+      "nameInvalid": "Имя может содержать только буквы и начинаться с заглавной",
+      "ageRequired": "Возраст обязателен",
+      "ageNegative": "Возраст не может быть отрицательным",
+      "emailInvalid": "Введите правильный адрес электронной почты",
+      "passwordRequired": "Пароль обязателен",
+      "passwordWeak": "Пароль должен включать буквы в верхнем и нижнем регистре, цифру и спецсимвол",
+      "confirmMismatch": "Пароли не совпадают",
+      "genderRequired": "Укажите пол",
+      "tcRequired": "Необходимо принять условия",
+      "countryInvalid": "Выберите страну из списка",
+      "file": "Ошибка файла: {msg}"
+    },
+    "buttons": {
+      "openUncontrolled": "Открыть Uncontrolled форму",
+      "openRHF": "Открыть форму React Hook форму"
+    },
+    "title": "Профиль"
+  },
+  "upload": {
+    "browse": "Выбрать…",
+    "onlyPngJpeg": "Допустимы только PNG или JPEG",
+    "tooLarge": "Файл слишком большой (макс. {maxMB} МБ)"
+  },
+  "dialog": {
+    "close": "Закрыть",
+    "submit": "Отправить",
+    "reset": "Очистить"
+  },
+  "cardDetails": {
+    "title": "Детали карточки",
+    "close": "Закрыть",
+    "imageAlt": "{name}",
+    "id": "ID",
+    "name": "Имя",
+    "species": "Вид",
+    "gender": "Пол",
+    "status": "Статус",
+    "type": "Тип",
+    "location": "Локация",
+    "created": "Создано",
+    "unknown": "Неизвестно"
+  },
+  "profileDialog": {
+    "title": "Профиль",
+    "pictureAlt": "Фотография профиля",
+    "empty": "Данные профиля пока отсутствуют.",
+    "edit": "Редактировать",
+    "close": "Закрыть",
+    "fields": {
+      "name": "Имя",
+      "age": "Возраст",
+      "email": "Email",
+      "gender": "Пол",
+      "country": "Страна"
+    }
   }
 }

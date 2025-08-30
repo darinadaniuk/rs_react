@@ -22,9 +22,7 @@ describe('LocaleDropdown', () => {
 
   it('should render current locale label', () => {
     render(<LocaleDropdown />);
-    expect(
-      screen.getByRole('button', { name: /english/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /english/i })).toBeInTheDocument();
   });
 
   it('should open menu and switch locale on click', () => {

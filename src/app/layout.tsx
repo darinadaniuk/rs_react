@@ -10,11 +10,7 @@ import { queryClient } from '@rs-react/query-client.config';
 
 import './app.css';
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>

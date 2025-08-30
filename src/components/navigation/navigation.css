@@ -17,7 +17,7 @@
 
 .navigation-link::after {
   position: absolute;
-  content: "";
+  content: '';
   top: 100%;
   left: 0;
   width: 100%;

@@ -23,9 +23,7 @@ vi.mock('next-intl', () => ({
 
 vi.mock('next-intl/navigation', () => ({
   createLocalizedPathnamesNavigation: () => ({
-    Link: (props: { href?: string; children?: React.ReactNode }) => (
-      <a {...props} />
-    ),
+    Link: (props: { href?: string; children?: React.ReactNode }) => <a {...props} />,
     redirect: vi.fn(),
     usePathname: () => '/',
     useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }),
@@ -66,6 +64,7 @@ vi.mock('@rs-react/components', () => ({
       Next Page ({currentPage}/{total})
     </button>
   ),
+  UserForms: () => <div data-testid="user-forms" />,
 }));
 
 vi.mock('@rs-react/store', () => ({
@@ -81,10 +80,7 @@ vi.mock('@rs-react/store', () => ({
 }));
 
 vi.mock('react-router-dom', async () => {
-  const actual =
-    await vi.importActual<typeof import('react-router-dom')>(
-      'react-router-dom'
-    );
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
   return {
     ...actual,
     useParams: () => ({}),
@@ -125,14 +121,11 @@ describe('Cards', () => {
         <MemoryRouter initialEntries={['/']}>
           <Routes>
             <Route path="/" element={<Cards />}>
-              <Route
-                path="details/:id"
-                element={<div data-testid="detail-outlet" />}
-              />
+              <Route path="details/:id" element={<div data-testid="detail-outlet" />} />
             </Route>
           </Routes>
         </MemoryRouter>
-      </QueryClientProvider>
+      </QueryClientProvider>,
     );
 
   it('should render loading state then cards', async () => {
@@ -149,9 +142,7 @@ describe('Cards', () => {
     } as CardsApiResponse);
 
     renderComponent();
-    await waitFor(() =>
-      expect(screen.getByTestId('empty')).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByTestId('empty')).toBeInTheDocument());
   });
 
   it('should call search and reset page', async () => {

@@ -1,0 +1,42 @@
+.upload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.upload-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.upload-file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-error-text {
+  color: #e5484d;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.upload-hint {
+  color: #555;
+  font-size: 12px;
+  line-height: 1.2;
+}

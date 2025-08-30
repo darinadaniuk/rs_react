@@ -2,11 +2,11 @@
 
 import Image from 'next/image';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import React from 'react';
 
 import { Button } from '@rs-react/components';
 
 import './error-boundary.css';
-import React from 'react';
 
 interface Props {
   children: ReactNode;

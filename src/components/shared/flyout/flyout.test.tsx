@@ -7,7 +7,7 @@ describe('Flyout', () => {
     render(
       <Flyout>
         <div data-testid="child">Hello Flyout</div>
-      </Flyout>
+      </Flyout>,
     );
 
     expect(screen.getByTestId('child')).toBeInTheDocument();

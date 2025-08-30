@@ -29,11 +29,7 @@ interface ToggleProps {
 vi.mock('@rs-react/components/client', () => ({
   Navigation: () => <nav data-testid="navigation" />,
   Toggle: ({ checked, onChange }: ToggleProps) => (
-    <button
-      data-testid="theme-toggle"
-      aria-pressed={checked}
-      onClick={() => onChange(!checked)}
-    >
+    <button data-testid="theme-toggle" aria-pressed={checked} onClick={() => onChange(!checked)}>
       toggle
     </button>
   ),
@@ -47,9 +43,7 @@ describe('Header', () => {
 
   it('should render title and user name', () => {
     render(<Header />);
-    expect(screen.getByTestId('header-title')).toHaveTextContent(
-      'Rick & Morty DB'
-    );
+    expect(screen.getByTestId('header-title')).toHaveTextContent('Rick & Morty DB');
     expect(screen.getByTestId('header-user')).toHaveTextContent('Darya');
   });
 

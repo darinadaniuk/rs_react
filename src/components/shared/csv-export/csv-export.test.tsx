@@ -24,18 +24,12 @@ describe('<CSVExport />', () => {
 
   it('should render with default button text', () => {
     render(<CSVExport data={mockData} filename="test.csv" />);
-    expect(
-      screen.getByRole('button', { name: /download/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /download/i })).toBeInTheDocument();
   });
 
   it('should render with custom button text', () => {
-    render(
-      <CSVExport data={mockData} filename="test.csv" buttonText="Export CSV" />
-    );
-    expect(
-      screen.getByRole('button', { name: /export csv/i })
-    ).toBeInTheDocument();
+    render(<CSVExport data={mockData} filename="test.csv" buttonText="Export CSV" />);
+    expect(screen.getByRole('button', { name: /export csv/i })).toBeInTheDocument();
   });
 
   it('should disable button when data is empty', () => {
@@ -51,14 +45,12 @@ describe('<CSVExport />', () => {
 
     anchor.click = clickSpy;
 
-    vi.spyOn(document, 'createElement').mockImplementation(
-      (tagName: string) => {
-        if (tagName === 'a') {
-          return anchor;
-        }
-        return originalCreateElement(tagName);
+    vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
+      if (tagName === 'a') {
+        return anchor;
       }
-    );
+      return originalCreateElement(tagName);
+    });
 
     render(<CSVExport data={mockData} filename="test.csv" />);
     const button = screen.getByRole('button');

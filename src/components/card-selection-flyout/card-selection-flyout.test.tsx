@@ -15,17 +15,13 @@ type CSVExportProps = {
 };
 
 vi.mock('@rs-react/components', () => ({
-  Button: ({ onClick, text }: ButtonProps) => (
-    <button onClick={onClick}>{text}</button>
-  ),
+  Button: ({ onClick, text }: ButtonProps) => <button onClick={onClick}>{text}</button>,
   CSVExport: ({ data, filename }: CSVExportProps) => (
     <div data-testid="csv-export">
       CSVExport filename: {filename} | Data length: {data.length}
     </div>
   ),
-  Flyout: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
+  Flyout: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 type StoreState = {
@@ -49,9 +45,7 @@ describe('CardSelectionFlyout', () => {
 
     expect(screen.getByText('2 items are selected')).toBeInTheDocument();
     expect(screen.getByText('Unselect all')).toBeInTheDocument();
-    expect(screen.getByTestId('csv-export')).toHaveTextContent(
-      'filename: 2_cards.csv'
-    );
+    expect(screen.getByTestId('csv-export')).toHaveTextContent('filename: 2_cards.csv');
   });
 
   it('should render singular item selected text', () => {
@@ -59,9 +53,7 @@ describe('CardSelectionFlyout', () => {
     render(<CardSelectionFlyout cards={cards} />);
 
     expect(screen.getByText('1 item is selected')).toBeInTheDocument();
-    expect(screen.getByTestId('csv-export')).toHaveTextContent(
-      'filename: 1_card.csv'
-    );
+    expect(screen.getByTestId('csv-export')).toHaveTextContent('filename: 1_card.csv');
   });
 
   it('should call unselectAll when "Unselect all" button is clicked', () => {

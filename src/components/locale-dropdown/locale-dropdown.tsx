@@ -31,11 +31,7 @@ export function LocaleDropdown() {
 
   return (
     <div className="locale-dropdown">
-      <button
-        type="button"
-        className="locale-dropdown-button"
-        onClick={() => setOpen(!open)}
-      >
+      <button type="button" className="locale-dropdown-button" onClick={() => setOpen(!open)}>
         {current?.label ?? locale.toUpperCase()} ▾
       </button>
 

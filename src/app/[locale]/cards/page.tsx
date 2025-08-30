@@ -1,7 +1,13 @@
-'use client';
+import { Suspense } from 'react';
 
-import { Cards } from '@rs-react/components';
+import CardsClient from './_client';
+
+export const dynamic = 'force-dynamic';
 
 export default function CardsPage() {
-  return <Cards />;
+  return (
+    <Suspense fallback={<div />}>
+      <CardsClient />
+    </Suspense>
+  );
 }

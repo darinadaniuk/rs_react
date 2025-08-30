@@ -13,11 +13,7 @@ export function Toggle({ checked, label, onChange }: ToggleProps) {
   return (
     <label className="toggle">
       {label && <span className="toggle-label">{label}</span>}
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-      />
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       <span className="toggle-slider">
         <span className="toggle-thumb">
           {checked ? (

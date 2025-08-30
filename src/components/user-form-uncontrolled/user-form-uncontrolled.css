@@ -1,0 +1,38 @@
+.form-row {
+  margin-bottom: 24px;
+}
+
+.radio {
+  margin-bottom: 30px;
+}
+
+.radio-label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #222;
+}
+
+.radio-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.radio-group * {
+  font-size: 14px;
+  color: #222;
+}
+
+.checkbox-row {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.validation-error {
+  position: absolute;
+  margin-top: 4px;
+  color: #e5484d;
+  font-size: 12px;
+  line-height: 1.2;
+}

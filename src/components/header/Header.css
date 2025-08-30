@@ -16,3 +16,8 @@
   align-items: center;
   gap: 8px;
 }
+
+.settings-icon.with-profile {
+  fill: #03dfb3;
+  cursor: pointer;
+}
