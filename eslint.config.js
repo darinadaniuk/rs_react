@@ -9,7 +9,7 @@ import reactCompiler from 'eslint-plugin-react-compiler';
 import eslintPluginImport from 'eslint-plugin-import';
 
 export default tseslint.config(
-  { ignores: ['dist', '.next/'] },
+  { ignores: ['dist', '.next/', 'next-env.d.ts'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.strict, eslintPluginPrettier],
     files: ['**/*.{ts,tsx}'],

@@ -67,7 +67,6 @@ export function Dialog({
   const handleSubmitClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     onSubmit?.();
-    onClose();
   };
 
   const dialog = (

@@ -33,7 +33,10 @@ export function UserForms() {
       <Dialog
         isOpen={openUncontrolled}
         onClose={() => setOpenUncontrolled(false)}
-        onSubmit={() => uncontrolledRef.current?.submit()}
+        onSubmit={() => {
+          const valid = uncontrolledRef.current?.submit() ?? false;
+          if (valid) setOpenUncontrolled(false);
+        }}
         title={t('title')}
       >
         <UserFormUncontrolled ref={uncontrolledRef} />

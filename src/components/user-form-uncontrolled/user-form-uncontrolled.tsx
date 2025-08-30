@@ -11,7 +11,7 @@ import { EMAIL_REGEX, NAME_REGEX, passwordRequirements } from '@rs-react/constan
 
 export type UncontrolledRegistrationFormHandle = {
   validate: () => boolean;
-  submit: () => void;
+  submit: () => boolean;
 };
 
 export type UncontrolledRegistrationFormProps = {
@@ -146,9 +146,11 @@ export const UserFormUncontrolled = React.forwardRef<
   useImperativeHandle(ref, () => ({
     validate,
     submit: () => {
-      if (validate()) {
+      const valid = validate();
+      if (valid) {
         formRef.current?.requestSubmit();
       }
+      return valid;
     },
   }));
 
