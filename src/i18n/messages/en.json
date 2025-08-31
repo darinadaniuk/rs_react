@@ -120,10 +120,18 @@
     "population": "Population",
     "iso": "ISO",
     "show": "Show data",
-    "hide": "Hide data"
+    "hide": "Hide data",
+    "year": "Year"
   },
   "countries": {
     "chooseColumns": "Choose columns",
-    "filterPlaceholder": "Filter countries"
+    "filterPlaceholder": "Filter countries",
+    "sortBy": "Sort by",
+    "direction": "Direction",
+    "name": "Name",
+    "population": "Population",
+    "asc": "Asc",
+    "desc": "Desc",
+    "year": "Year"
   }
 }

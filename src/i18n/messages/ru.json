@@ -120,10 +120,18 @@
     "population": "Население",
     "iso": "ISO",
     "show": "Показать данные",
-    "hide": "Скрыть данные"
+    "hide": "Скрыть данные",
+    "year": "Год"
   },
   "countries": {
     "chooseColumns": "Выбрать колонки",
-    "filterPlaceholder": "Фильтр стран"
+    "filterPlaceholder": "Фильтр стран",
+    "sortBy": "Сортировка",
+    "direction": "Направление",
+    "name": "Название",
+    "population": "Население",
+    "asc": "По возрастанию",
+    "desc": "По убыванию",
+    "year": "Год"
   }
 }

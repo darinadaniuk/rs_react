@@ -15,3 +15,4 @@ export * from './profile-dialog/profile-dialog';
 export * from './countries/countries';
 export * from './country-card/country-card';
 export * from './country-column-picker/country-column-picker';
+export * from './country-year-dropdown/country-year-dropdown';

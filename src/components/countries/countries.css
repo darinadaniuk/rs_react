@@ -8,7 +8,8 @@
 
 .countries-header {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -25,9 +26,22 @@
   grid-template-columns: 1fr;
   gap: 16px;
   margin-top: 16px;
+  max-width: 100%;
+  overflow: scroll;
 }
 
 .countries-fallback {
   display: flex;
   height: 85vh;
+}
+
+.countries-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dropdown-select {
+  border: 1px solid #03dfb3;
+  border-radius: 4px;
 }

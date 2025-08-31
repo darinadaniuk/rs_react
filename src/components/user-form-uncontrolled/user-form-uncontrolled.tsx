@@ -3,11 +3,11 @@
 import { useTranslations } from 'next-intl';
 import React, { useRef, useState, useImperativeHandle } from 'react';
 
-import { useCountryStore, usePhotoStore, useUserStore, type UserData } from '@rs-react/store';
 import { Checkbox, Upload, Radio, TextField } from '@rs-react/components';
+import { EMAIL_REGEX, NAME_REGEX, passwordRequirements } from '@rs-react/constants';
+import { useCountryStore, usePhotoStore, useUserStore, type UserData } from '@rs-react/store';
 
 import './user-form-uncontrolled.css';
-import { EMAIL_REGEX, NAME_REGEX, passwordRequirements } from '@rs-react/constants';
 
 export type UncontrolledRegistrationFormHandle = {
   validate: () => boolean;
