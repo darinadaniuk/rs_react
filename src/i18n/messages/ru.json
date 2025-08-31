@@ -22,7 +22,8 @@
   },
   "nav": {
     "home": "Главная",
-    "about": "Обо мне"
+    "about": "Обо мне",
+    "countries": "Страны"
   },
   "search": {
     "placeholder": "Поиск",
@@ -102,5 +103,27 @@
       "gender": "Пол",
       "country": "Страна"
     }
+  },
+  "columnPicker": {
+    "title": "Дополнительные колонки",
+    "intro": "Выберите дополнительные колонки.",
+    "requiredPrefix": "Обязательные колонки всегда видны:",
+    "noFields": "Дополнительные поля не найдены.",
+    "columns": {
+      "year": "год",
+      "population": "население",
+      "co2": "CO2",
+      "co2_per_capita": "CO2 на человека"
+    }
+  },
+  "countryCard": {
+    "population": "Население",
+    "iso": "ISO",
+    "show": "Показать данные",
+    "hide": "Скрыть данные"
+  },
+  "countries": {
+    "chooseColumns": "Выбрать колонки",
+    "filterPlaceholder": "Фильтр стран"
   }
 }

@@ -22,7 +22,8 @@
   },
   "nav": {
     "home": "Home",
-    "about": "About"
+    "about": "About",
+    "countries": "Countries"
   },
   "search": {
     "placeholder": "Search",
@@ -102,5 +103,27 @@
       "gender": "Gender",
       "country": "Country"
     }
+  },
+  "columnPicker": {
+    "title": "Additional columns",
+    "intro": "Select more columns.",
+    "requiredPrefix": "Required columns are always visible:",
+    "noFields": "No additional fields found.",
+    "columns": {
+      "year": "year",
+      "population": "population",
+      "co2": "CO2",
+      "co2_per_capita": "CO2 per capita"
+    }
+  },
+  "countryCard": {
+    "population": "Population",
+    "iso": "ISO",
+    "show": "Show data",
+    "hide": "Hide data"
+  },
+  "countries": {
+    "chooseColumns": "Choose columns",
+    "filterPlaceholder": "Filter countries"
   }
 }
