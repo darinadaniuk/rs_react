@@ -17,6 +17,9 @@ export function Navigation() {
       <Link className="navigation-link" href="/about">
         {t('about')}
       </Link>
+      <Link className="navigation-link" href="/countries">
+        {t('countries')}
+      </Link>
     </nav>
   );
 }

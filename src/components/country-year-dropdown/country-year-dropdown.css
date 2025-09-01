@@ -1,0 +1,10 @@
+.year-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.year-dropdown-select {
+  border: 1px solid #03dfb3;
+  border-radius: 4px;
+}

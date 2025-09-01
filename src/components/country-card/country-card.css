@@ -1,0 +1,72 @@
+.country-card {
+  border: 1px solid #03dfb3;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.country-card-header {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-header-texts {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.card-header-texts div:not(:first-child)::before {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  background: #03dfb3;
+  margin-right: 20px;
+}
+
+.country-name {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.country-table-wrap {
+  margin-top: 18px;
+  height: 300px;
+  overflow-x: auto;
+}
+
+.country-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  border-bottom: 1px solid #03dfb3;
+}
+
+.td {
+  padding: 6px 12px;
+  border-bottom: 1px solid #03dfb3;
+}
+
+.tr:last-child .td {
+  border-bottom: none;
+}
+
+.country-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: #03dfb3;
+}
+
+.tr.is-active {
+  box-shadow: inset 0 0 4px 3px #03dfb3;
+}
