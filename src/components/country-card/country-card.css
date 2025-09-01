@@ -33,6 +33,7 @@
 
 .country-table-wrap {
   margin-top: 18px;
+  height: 300px;
   overflow-x: auto;
 }
 
